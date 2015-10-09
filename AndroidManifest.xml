@@ -23,6 +23,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="si.krkavolley.volleystat.PlayersActivity"
+            android:label="@string/title_activity_players"
+            android:screenOrientation="landscape"
+            android:parentActivityName="si.krkavolley.volleystat.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="si.krkavolley.volleystat.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

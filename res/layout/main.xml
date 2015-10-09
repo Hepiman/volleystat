@@ -8,125 +8,19 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="si.krkavolley.volleystat.MainActivity$PlaceholderFragment" >
 
-    <RadioGroup
-        android:id="@+id/radioGroup1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:orientation="horizontal" >
-
-        <RadioButton
-            android:id="@+id/niz1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="1. niz" />
-
-        <RadioButton
-            android:id="@+id/niz2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="2. niz" />
-
-        <RadioButton
-            android:id="@+id/niz3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="3. niz" />
-
-        <RadioButton
-            android:id="@+id/niz4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="4. niz" />
-
-        <RadioButton
-            android:id="@+id/niz5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="5. niz" />
-
-    </RadioGroup>
-
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/radioGroup1"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/radioGroup1" >
+        android:orientation="vertical"
+        android:layout_centerInParent="true"
+        >
 
-        <ListView
-            android:id="@+id/igralci_list"
-            android:layout_width="278dp"
-            android:layout_height="wrap_content"
-            tools:listitem="@android:layout/simple_list_item_single_choice" >
-
-        </ListView>
-
-        <RelativeLayout
+        <Button
+            android:id="@+id/menu_button_players"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="0.24" >
+            android:layout_height="wrap_content"
+            android:text="Manage Players" />
 
-            
-
-            <EditText
-                android:id="@+id/playerName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentLeft="true"
-                android:ems="10" >
-
-                <requestFocus />
-            </EditText>
-
-            <EditText
-                android:id="@+id/playerDesc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_toRightOf="@+id/playerName"
-                android:ems="10" />
-
-            <TextView
-                android:id="@+id/textView1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_above="@+id/playerName"
-                android:layout_alignParentLeft="true"
-                android:text="Ime igralca" />
-
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_above="@+id/playerDesc"
-                android:layout_toRightOf="@+id/playerName"
-                android:text="Desc igralca" />
-
-            <Button
-                android:id="@+id/shraniIgralca"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignRight="@+id/playerDesc"
-                android:text="Shrani" />
-
-            <ListView
-                android:id="@+id/statTypeList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_above="@+id/textView1"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true" >
-
-            </ListView>
-
-        </RelativeLayout>
-        
     </LinearLayout>
 
 </RelativeLayout>

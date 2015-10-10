@@ -38,18 +38,12 @@ public class PlayersActivity extends Activity {
 		db = new DatabaseHelper(getApplicationContext());
 		players = new ArrayList<Player>();
 		players = (ArrayList<Player>) db.getAllPlayers();
-
-		playerList = new ArrayList<String>();
-
-		for (int i = 0; i < players.size(); i++) {
-			playerList.add(((Player) players.get(i)).getName());
-		}
-
+		
 		lv = (ListView) findViewById(R.id.listview_players);
 		lv.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 		
 		arrayAdapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_list_item_single_choice, playerList);
+				android.R.layout.simple_list_item_single_choice, players);
 
 		lv.setAdapter(arrayAdapter);
 		
@@ -69,13 +63,12 @@ public class PlayersActivity extends Activity {
             		Log.d("addPlayer", playerName + ", " + playerDesc);
             		textName.setText("");
             		textDesc.setText("");
+            		
             		players = (ArrayList<Player>) db.getAllPlayers();
             		Toast.makeText(getApplicationContext(), "Igralci: "+players.size(), Toast.LENGTH_LONG).show();
-            		playerList.clear();
-            		for (int i = 0; i < players.size(); i++) {
-            			playerList.add(((Player) players.get(i)).getName());
-            		}
-            		arrayAdapter.notifyDataSetChanged();    		
+            		
+            		notifyDataSetChanged(); 
+            		
             	}
             	else 
             		Log.d("choice", "Vnesi ime igralca!");
@@ -89,9 +82,14 @@ public class PlayersActivity extends Activity {
 			public void onClick(View v) {
 
 				lv = (ListView) findViewById(R.id.listview_players);
-				Object checkedItem = lv.getAdapter().getItem(lv.getCheckedItemPosition());
-				Player p = (Player) players.get(lv.getCheckedItemPosition());
+				Player p = (Player) lv.getAdapter().getItem(lv.getCheckedItemPosition());
 				Toast.makeText(getApplicationContext(), p.getId()+ " " +p.getName(), Toast.LENGTH_SHORT).show();
+				db.removePlayer(p.getId());
+				players.clear();
+				players = (ArrayList<Player>) db.getAllPlayers();
+
+        		notifyDataSetChanged(); 
+				Log.d("players size", ""+players.size());
 				
 			}
 		});
@@ -118,6 +116,17 @@ public class PlayersActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 
+	protected void notifyDataSetChanged() { 
+    	if (arrayAdapter!=null && arrayAdapter instanceof ArrayAdapter) {
+    		((ArrayAdapter<?>)arrayAdapter).notifyDataSetChanged();
+    		arrayAdapter = new ArrayAdapter<String>(this,
+    				android.R.layout.simple_list_item_single_choice, players);
+
+    		lv.setAdapter(arrayAdapter);
+    	} else { 
+    		Log.w("adapter", "Could not update list Array Adapter");
+    	} 
+	} 
 	
 
 }

@@ -14,6 +14,13 @@ public class Player implements Parcelable{
 		
 	}
 	
+	@Override
+	public String toString(){
+		String txt = this.name;
+		return txt;
+		
+	}
+	
 	public Player(String name, String description){
 		this.name = name;
 		this.description = description;

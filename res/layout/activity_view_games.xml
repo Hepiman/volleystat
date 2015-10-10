@@ -1,0 +1,45 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container_view_games"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+        <ListView
+            android:id="@+id/listview_viewGames"
+            android:layout_width="match_parent"
+            android:layout_height="0dip"
+            android:layout_weight="1" />
+
+        <LinearLayout 
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            
+            <Button
+            android:id="@+id/add_new_game"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add new" />
+            
+            <Button
+            android:id="@+id/button_game_start_stats"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Start stats" />
+            
+            <Button
+            android:id="@+id/button_game_remove"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Remove selected" />
+            
+        </LinearLayout>
+        
+    </LinearLayout>
+
+</FrameLayout>

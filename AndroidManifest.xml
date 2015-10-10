@@ -15,8 +15,7 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name="si.krkavolley.volleystat.MainActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="landscape" >
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -30,6 +29,22 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="si.krkavolley.volleystat.MainActivity" />
+        </activity>
+        <activity
+            android:name="si.krkavolley.volleystat.ViewGamesActivity"
+            android:label="@string/title_activity_view_games"
+            android:parentActivityName="si.krkavolley.volleystat.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="si.krkavolley.volleystat.MainActivity" />
+        </activity>
+        <activity
+            android:name="si.krkavolley.volleystat.CreateGameActivity"
+            android:label="@string/title_activity_create_game"
+            android:parentActivityName="si.krkavolley.volleystat.ViewGamesActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="si.krkavolley.volleystat.ViewGamesActivity" />
         </activity>
     </application>
 

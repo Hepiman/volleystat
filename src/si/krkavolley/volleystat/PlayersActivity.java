@@ -89,7 +89,6 @@ public class PlayersActivity extends Activity {
 				players = (ArrayList<Player>) db.getAllPlayers();
 
         		notifyDataSetChanged(); 
-				Log.d("players size", ""+players.size());
 				
 			}
 		});

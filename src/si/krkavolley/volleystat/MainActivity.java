@@ -26,7 +26,7 @@ import android.os.Build;
 public class MainActivity extends Activity {
 
 	Context context;
-	Button buttonPlayers;
+	Button buttonPlayers, buttonGames;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +39,15 @@ public class MainActivity extends Activity {
 	        public void onClick(View v) {
 	        	Intent i;
 	        	i = new Intent(context, PlayersActivity.class);
+	        	startActivity(i);
+	        };
+	    });
+		
+		buttonGames = (Button)findViewById(R.id.menu_button_games);
+		buttonGames.setOnClickListener(new View.OnClickListener() {
+	        public void onClick(View v) {
+	        	Intent i;
+	        	i = new Intent(context, ViewGamesActivity.class);
 	        	startActivity(i);
 	        };
 	    });

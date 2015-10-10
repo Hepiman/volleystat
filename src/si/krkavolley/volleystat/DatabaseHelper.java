@@ -18,7 +18,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	private static final String LOG = "DatabaseHelper";
 
 	// DB version
-	private static final int DB_VERSION = 1;
+	private static final int DB_VERSION = 4;
 
 	// DB name
 	private static final String DB_NAME = "volleystat_db";
@@ -37,8 +37,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 	// GAME table column names
 	private static final String KEY_GAME_DESC = "game_desc";
-	private static final String KEY_GAME_HOMETEAM = "game_home_team";
-	private static final String KEY_GAME_AWAYTEAM = "game_away_team";
+	private static final String KEY_GAME_NAME = "game_name";
+	private static final String KEY_GAME_DATE = "game_date";
+	private static final String KEY_GAME_SCORE = "game_score";
 
 	// STATS table column names
 	private static final String KEY_PLAYER_ID = "player_id";
@@ -81,7 +82,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 	private static final String CREATE_TABLE_GAME = "CREATE TABLE "
 			+ TABLE_GAME + " (" + KEY_ID + " INTEGER PRIMARY KEY,"
-			+ KEY_PLAYER_NAME + " TEXT, " + KEY_PLAYER_DESC + " TEXT" + ");";
+			+ KEY_GAME_NAME + " TEXT, " + KEY_GAME_DESC + " TEXT," 
+			+ KEY_GAME_DATE + " TEXT, " + KEY_GAME_SCORE + " TEXT"
+			+ ");";
 
 	private static final String CREATE_TABLE_STATS = "CREATE TABLE "
 			+ TABLE_STATS + " (" + KEY_ID + " INTEGER PRIMARY KEY,"
@@ -96,6 +99,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ KEY_ATTACK_bb + " INTEGER, " + KEY_SERVE_3 + " INTEGER, "
 			+ KEY_SERVE_2 + " INTEGER, " + KEY_SERVE_1 + " INTEGER, "
 			+ KEY_SERVE_0 + " INTEGER, " + KEY_SERVE_wa + " INTEGER, "
+			+ KEY_SERVE_e + " INTEGER, "
 			+ KEY_SERVE_over + " INTEGER" + ");";
 
 	public DatabaseHelper(Context context) {
@@ -123,7 +127,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		onCreate(db);
 	}
 
-	// Create an exercise
+	// Create a player
 	public long createPlayer(Player player) {
 		SQLiteDatabase db = this.getWritableDatabase();
 
@@ -158,7 +162,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		return e;
 	}
 
-	// Retrieve a player
+	// Remove a player
 	public void removePlayer(long playerId) {
 		SQLiteDatabase db = this.getReadableDatabase();
 
@@ -192,7 +196,83 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		}
 		return players;
 	}
+	
+	
+	// Create a game
+	public long createGame(Game game) {
+		SQLiteDatabase db = this.getWritableDatabase();
 
+		ContentValues values = new ContentValues();
+		values.put(KEY_GAME_NAME, game.getName());
+		values.put(KEY_GAME_DESC, game.getDescription());
+		values.put(KEY_GAME_DATE, game.getDate());
+		values.put(KEY_GAME_SCORE, game.getScore());
+
+		long gameId = db.insert(TABLE_GAME, null, values);
+		Log.d(LOG, "nova tekma: " + game.getName());
+		return gameId;
+	}
+	
+	// Retrieve a game
+	public Game getGame(long gameId) {
+		SQLiteDatabase db = this.getReadableDatabase();
+
+		String query = "SELECT * FROM " + TABLE_GAME + " WHERE " + KEY_ID
+				+ " = " + gameId;
+
+		Log.e(LOG, query);
+
+		Cursor c = db.rawQuery(query, null);
+
+		if (c != null)
+			c.moveToFirst();
+
+		Game g = new Game();
+		g.setId(c.getInt(c.getColumnIndex(KEY_ID)));
+		g.setName(c.getString(c.getColumnIndex(KEY_GAME_NAME)));
+		g.setDescription(c.getString(c.getColumnIndex(KEY_GAME_DESC)));
+		g.setDate(c.getString(c.getColumnIndex(KEY_GAME_DATE)));
+		g.setScore(c.getString(c.getColumnIndex(KEY_GAME_SCORE)));
+
+		return g;
+	}
+	
+	// Retrieve all games
+		public List<Game> getAllGames() {
+			List<Game> games = new ArrayList<Game>();
+
+			String query = "SELECT * FROM " + TABLE_GAME;
+			
+			SQLiteDatabase db = this.getReadableDatabase();
+			Cursor c = db.rawQuery(query, null);
+
+			// loop through and add to list
+			if (c.moveToFirst()) {
+				do {
+					Game g = new Game();
+					g.setId(c.getInt(c.getColumnIndex(KEY_ID)));
+					g.setName(c.getString(c.getColumnIndex(KEY_GAME_NAME)));
+					g.setDescription(c.getString(c.getColumnIndex(KEY_GAME_DESC)));
+					g.setDate(c.getString(c.getColumnIndex(KEY_GAME_DATE)));
+					g.setScore(c.getString(c.getColumnIndex(KEY_GAME_SCORE)));
+
+					// add to list
+					games.add(g);
+				} while (c.moveToNext());
+			}
+			return games;
+		}
+	
+		// Remove a game
+		public void removeGame(long gameId) {
+			SQLiteDatabase db = this.getReadableDatabase();
+
+			db.delete(TABLE_GAME, KEY_ID + "=?", new String[] { "" + gameId });
+			db.close();
+			Log.d(LOG, "Deleted game with id: " + gameId);
+			return;
+		}
+	
 	// Close database
 	public void closeDB() {
 		SQLiteDatabase db = this.getReadableDatabase();

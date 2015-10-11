@@ -68,9 +68,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	private static final String KEY_SERVE_2 = "serve_2";
 	private static final String KEY_SERVE_1 = "serve_1";
 	private static final String KEY_SERVE_0 = "serve_0";
-	private static final String KEY_SERVE_wa = "serve_wa";
-	private static final String KEY_SERVE_over = "serve_over";
-	private static final String KEY_SERVE_e = "serve_e";
+	private static final String KEY_SERVE_wa = "serve_wa"; // 4
+	private static final String KEY_SERVE_over = "serve_over"; // 5
+	private static final String KEY_SERVE_e = "serve_e"; // 6
 
 	// opponent errors
 	private static final String KEY_OPP_ERR = "opp_err";
@@ -82,9 +82,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 	private static final String CREATE_TABLE_GAME = "CREATE TABLE "
 			+ TABLE_GAME + " (" + KEY_ID + " INTEGER PRIMARY KEY,"
-			+ KEY_GAME_NAME + " TEXT, " + KEY_GAME_DESC + " TEXT," 
-			+ KEY_GAME_DATE + " TEXT, " + KEY_GAME_SCORE + " TEXT"
-			+ ");";
+			+ KEY_GAME_NAME + " TEXT, " + KEY_GAME_DESC + " TEXT,"
+			+ KEY_GAME_DATE + " TEXT, " + KEY_GAME_SCORE + " TEXT" + ");";
 
 	private static final String CREATE_TABLE_STATS = "CREATE TABLE "
 			+ TABLE_STATS + " (" + KEY_ID + " INTEGER PRIMARY KEY,"
@@ -99,8 +98,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ KEY_ATTACK_bb + " INTEGER, " + KEY_SERVE_3 + " INTEGER, "
 			+ KEY_SERVE_2 + " INTEGER, " + KEY_SERVE_1 + " INTEGER, "
 			+ KEY_SERVE_0 + " INTEGER, " + KEY_SERVE_wa + " INTEGER, "
-			+ KEY_SERVE_e + " INTEGER, "
-			+ KEY_SERVE_over + " INTEGER" + ");";
+			+ KEY_SERVE_e + " INTEGER, " + KEY_SERVE_over + " INTEGER" + ");";
 
 	public DatabaseHelper(Context context) {
 		super(context, DB_NAME, null, DB_VERSION);
@@ -196,8 +194,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		}
 		return players;
 	}
-	
-	
+
 	// Create a game
 	public long createGame(Game game) {
 		SQLiteDatabase db = this.getWritableDatabase();
@@ -212,7 +209,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Log.d(LOG, "nova tekma: " + game.getName());
 		return gameId;
 	}
-	
+
 	// Retrieve a game
 	public Game getGame(long gameId) {
 		SQLiteDatabase db = this.getReadableDatabase();
@@ -236,43 +233,111 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 		return g;
 	}
-	
+
 	// Retrieve all games
-		public List<Game> getAllGames() {
-			List<Game> games = new ArrayList<Game>();
+	public List<Game> getAllGames() {
+		List<Game> games = new ArrayList<Game>();
 
-			String query = "SELECT * FROM " + TABLE_GAME;
+		String query = "SELECT * FROM " + TABLE_GAME;
+
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor c = db.rawQuery(query, null);
+
+		// loop through and add to list
+		if (c.moveToFirst()) {
+			do {
+				Game g = new Game();
+				g.setId(c.getInt(c.getColumnIndex(KEY_ID)));
+				g.setName(c.getString(c.getColumnIndex(KEY_GAME_NAME)));
+				g.setDescription(c.getString(c.getColumnIndex(KEY_GAME_DESC)));
+				g.setDate(c.getString(c.getColumnIndex(KEY_GAME_DATE)));
+				g.setScore(c.getString(c.getColumnIndex(KEY_GAME_SCORE)));
+
+				// add to list
+				games.add(g);
+			} while (c.moveToNext());
+		}
+		return games;
+	}
+
+	// Remove a game
+	public void removeGame(long gameId) {
+		SQLiteDatabase db = this.getReadableDatabase();
+
+		db.delete(TABLE_GAME, KEY_ID + "=?", new String[] { "" + gameId });
+		db.close();
+		Log.d(LOG, "Deleted game with id: " + gameId);
+		return;
+	}
+	
+	public void writeServe(int gameId, int playerId, int setNumber, int serveType){
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.query(false, TABLE_STATS, new String[] {KEY_PLAYER_ID, KEY_GAME_ID, KEY_SET}, 
+                null, new String[] {""+playerId, ""+gameId, ""+setNumber}, null, null, null, null);
+		Stat stat = new Stat(gameId, playerId, setNumber);
+		if(cursor.moveToFirst()){
+			Log.d("Query", "seeking stats: found");
+			stat.setReception_3(cursor.getInt(cursor.getColumnIndex(KEY_RECEPTION_3)));
+			stat.setReception_2(cursor.getInt(cursor.getColumnIndex(KEY_RECEPTION_2)));
+			stat.setReception_1(cursor.getInt(cursor.getColumnIndex(KEY_RECEPTION_1)));
+			stat.setReception_0(cursor.getInt(cursor.getColumnIndex(KEY_RECEPTION_0)));
+			stat.setReception_wa(cursor.getInt(cursor.getColumnIndex(KEY_RECEPTION_wa)));
+			stat.setReception_over(cursor.getInt(cursor.getColumnIndex(KEY_RECEPTION_over)));
+			stat.setAttack_3(cursor.getInt(cursor.getColumnIndex(KEY_ATTACK_3)));
+			stat.setAttack_2(cursor.getInt(cursor.getColumnIndex(KEY_ATTACK_2)));
+			stat.setAttack_1(cursor.getInt(cursor.getColumnIndex(KEY_ATTACK_1)));
+			stat.setAttack_0(cursor.getInt(cursor.getColumnIndex(KEY_ATTACK_0)));
+			stat.setAttack_e(cursor.getInt(cursor.getColumnIndex(KEY_ATTACK_e)));
+			stat.setAttack_ee(cursor.getInt(cursor.getColumnIndex(KEY_ATTACK_ee)));
+			stat.setAttack_b(cursor.getInt(cursor.getColumnIndex(KEY_ATTACK_b)));
+			stat.setAttack_bb(cursor.getInt(cursor.getColumnIndex(KEY_ATTACK_bb)));
+			stat.setServe_3(cursor.getInt(cursor.getColumnIndex(KEY_SERVE_3)));
+			stat.setServe_2(cursor.getInt(cursor.getColumnIndex(KEY_SERVE_2)));
+			stat.setServe_1(cursor.getInt(cursor.getColumnIndex(KEY_SERVE_1)));
+			stat.setServe_0(cursor.getInt(cursor.getColumnIndex(KEY_SERVE_0)));
+			stat.setServe_wa(cursor.getInt(cursor.getColumnIndex(KEY_SERVE_wa)));
+			stat.setServe_e(cursor.getInt(cursor.getColumnIndex(KEY_SERVE_e)));
+			stat.setServe_over(cursor.getInt(cursor.getColumnIndex(KEY_SERVE_over)));
 			
-			SQLiteDatabase db = this.getReadableDatabase();
-			Cursor c = db.rawQuery(query, null);
-
-			// loop through and add to list
-			if (c.moveToFirst()) {
-				do {
-					Game g = new Game();
-					g.setId(c.getInt(c.getColumnIndex(KEY_ID)));
-					g.setName(c.getString(c.getColumnIndex(KEY_GAME_NAME)));
-					g.setDescription(c.getString(c.getColumnIndex(KEY_GAME_DESC)));
-					g.setDate(c.getString(c.getColumnIndex(KEY_GAME_DATE)));
-					g.setScore(c.getString(c.getColumnIndex(KEY_GAME_SCORE)));
-
-					// add to list
-					games.add(g);
-				} while (c.moveToNext());
+			//increase appropriate counter
+			switch (serveType) {
+			case 0:
+				stat.setServe_0(stat.getServe_0() + 1);
+				break;
+			case 1:
+				stat.setServe_1(stat.getServe_1() + 1);
+				break;
+			case 2:
+				stat.setServe_0(stat.getServe_2() + 2);
+				break;
+			case 3:
+				stat.setServe_0(stat.getServe_3() + 3);
+				break;
+			case 4:
+				stat.setServe_wa(stat.getServe_wa() + 1);
+				break;
+			case 5:
+				stat.setServe_over(stat.getServe_over() + 1);
+				break;
+			case 6:
+				stat.setServe_e(stat.getServe_e() + 1);
+				break;
+				
+			default:
+				break;
 			}
-			return games;
-		}
-	
-		// Remove a game
-		public void removeGame(long gameId) {
-			SQLiteDatabase db = this.getReadableDatabase();
+			
+		}else{
 
-			db.delete(TABLE_GAME, KEY_ID + "=?", new String[] { "" + gameId });
-			db.close();
-			Log.d(LOG, "Deleted game with id: " + gameId);
-			return;
+			Log.d("Query", "seeking stats: not found");
+			
 		}
+		
+		
+	}
 	
+	
+
 	// Close database
 	public void closeDB() {
 		SQLiteDatabase db = this.getReadableDatabase();

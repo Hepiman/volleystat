@@ -76,6 +76,18 @@ public class ViewGamesActivity extends Activity {
 			}
 		});
 		
+		startStats = (Button) findViewById(R.id.button_game_start_stats);
+		startStats.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent i;
+	        	i = new Intent(ctx, StatisticsActivity.class);
+	        	startActivity(i);
+				
+			}
+		});
+		
 		
 	}
 

@@ -19,6 +19,10 @@ public class Stat implements Parcelable {
 	public Stat() {
 
 	}
+	
+	public void setId(int id){
+		this.id = id;
+	}
 
 	public int getGame_id() {
 		return game_id;
@@ -246,6 +250,27 @@ public class Stat implements Parcelable {
 		this.game_id = game_id;
 		this.player_id = player_id;
 		this.game_set = game_set;
+		this.reception_3 = 0;
+		this.reception_2 = 0;
+		this.reception_1 = 0;
+		this.reception_0 = 0;
+		this.reception_wa = 0;
+		this.reception_over = 0;
+		this.attack_3 = 0;
+		this.attack_2 = 0;
+		this.attack_1 = 0;
+		this.attack_0 = 0;
+		this.attack_e = 0;
+		this.attack_ee = 0;
+		this.attack_b = 0;
+		this.attack_bb = 0;
+		this.serve_3 = 0;
+		this.serve_2 = 0;
+		this.serve_1 = 0;
+		this.serve_0 = 0;
+		this.serve_wa = 0;
+		this.serve_over = 0;
+		this.serve_e = 0;
 	}
 
 	public Stat(int id, int game_id, int player_id, int game_set,

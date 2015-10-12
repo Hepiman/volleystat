@@ -32,7 +32,7 @@ public class StatisticsActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				
-				db.writeServe(1, 1, 1, 1);
+				//db.writeServe(1, 1, 1, 1);
 				Stat stat = db.getPlayerStats(1, 1);
 				Toast.makeText(getApplicationContext(), "Serve 0: " + stat.getServe_0(), Toast.LENGTH_SHORT).show();
 				

@@ -1,5 +1,5 @@
 package si.krkavolley.volleystat;
-
+import android.database.DatabaseUtils;
 import si.krkavolley.volleystat.Entity.*;
 
 import java.util.ArrayList;
@@ -12,6 +12,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import android.widget.SimpleCursorAdapter.CursorToStringConverter;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -555,8 +556,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		playerId = 1;
 		gameId = 1;
 		Cursor cursor = db.query(TABLE_STATS, new String[]{"*"}, KEY_PLAYER_ID + "=? and " + KEY_GAME_ID + "=? and " + KEY_SET + "=?", new String[] {""+playerId, ""+gameId, ""+setNumber}, null, null, null);
+		Log.d("Cursor", "db.query successful");
+		android.database.DatabaseUtils.dumpCursor(cursor);
 		Stat stat = new Stat();
 		stat = cursorToStat(cursor);
+		Log.d("Stat", "cursor to stat success");
 		
 		
 		
@@ -566,6 +570,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	private Stat cursorToStat(Cursor cursor) {
 		
 		Stat stat = new Stat();
+		if (cursor != null){
+			cursor.moveToFirst();
 		stat.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
 		stat.setGame_id(cursor.getInt(cursor.getColumnIndex(KEY_GAME_ID)));
 		stat.setPlayer_id(cursor.getInt(cursor.getColumnIndex(KEY_PLAYER_ID)));
@@ -591,7 +597,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		stat.setServe_wa(cursor.getInt(cursor.getColumnIndex(KEY_SERVE_wa)));
 		stat.setServe_e(cursor.getInt(cursor.getColumnIndex(KEY_SERVE_e)));
 		stat.setServe_over(cursor.getInt(cursor.getColumnIndex(KEY_SERVE_over)));
-		
+		}
 		return stat;
 	}
 

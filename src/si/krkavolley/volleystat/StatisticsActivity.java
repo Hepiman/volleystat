@@ -6,7 +6,9 @@ import si.krkavolley.volleystat.Entity.Player;
 import si.krkavolley.volleystat.Entity.Stat;
 import android.app.Activity;
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,6 +24,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.os.Build;
@@ -34,7 +37,7 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 	ArrayList players;
 	ListView lv_players, lv_actionTypes;
 	ArrayAdapter<String> arrayAdapter, actionTypesAdapter;
-	int gameId;
+	int gameId, playerId, setNumber = 1;
 	String gameName, gameScore;
 	TextView bottomText;
 	// reception buttons
@@ -43,6 +46,8 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 	Button btn_a0, btn_a1, btn_a2, btn_a3, btn_ae, btn_aee, btn_ab, btn_abb;
 	// serve buttons
 	Button btn_s0, btn_s1, btn_s2, btn_s3, btn_swa, btn_sover, btn_se;
+
+	RadioGroup setNumberGroup;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +68,21 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 		attackButtonsContainer = (LinearLayout) findViewById(R.id.container_attack_buttons);
 		receptionButtonsContainer = (LinearLayout) findViewById(R.id.container_reception_buttons);
 
+		setNumberGroup = (RadioGroup) findViewById(R.id.radioGroup_setNumbers);
+		setNumberGroup
+				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+					@Override
+					public void onCheckedChanged(RadioGroup group, int checkedId) {
+						View rButton = group.findViewById(checkedId);
+						int index = group.indexOfChild(rButton);
+						setNumber = index + 1;
+						Toast.makeText(getApplicationContext(),
+								"setNumber: " + setNumber, Toast.LENGTH_SHORT)
+								.show();
+					}
+				});
+
 		db = new DatabaseHelper(getApplicationContext());
 
 		players = new ArrayList<Player>();
@@ -74,6 +94,35 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 				android.R.layout.simple_list_item_single_choice, players);
 
 		lv_players.setAdapter(arrayAdapter);
+
+		lv_players.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1,
+					int position, long arg3) {
+
+				if (position >= 0) {
+					Player p = (Player) lv_players.getAdapter().getItem(
+							position);
+					playerId = p.getId();
+					// Log.d("debug", "playerId =" + playerId + " gameId = " +
+					// gameId + " setNumber = " + setNumber + "position: " +
+					// position + "  long: " + arg3);
+				}
+
+			}
+		});
+		lv_players.setLongClickable(true);
+		lv_players.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+			 public boolean onItemLongClick (AdapterView<?> parent, View view, int position, long id) {
+				if (position >= 0) {
+					Player p = (Player) lv_players.getAdapter().getItem(
+							position);
+					alertPlayerStats(p.getId());
+				}
+		        return true;
+			}
+		});
 
 		ArrayList<String> actionTypes = new ArrayList<String>();
 		actionTypes.add("Serve");
@@ -197,114 +246,138 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 
 	@Override
 	public void onClick(View v) {
-		 //TODO: read playerId, setNumber and gameId
-//		lv_players = (ListView) this.findViewById(R.id.listview_viewGames);
-//		lv_actionTypes = (ListView) this.findViewById(R.id.listview_action_type);
-//		Log.d("log", "" + lv_actionTypes.getSelectedItemPosition());
-//		Log.d("log", "" + lv_players.getSelectedItemPosition());
-		RadioGroup activeSet = (RadioGroup) this.findViewById(R.id.radioGroup_setNumbers);
-		Log.d("log", "" + activeSet.getCheckedRadioButtonId());
-		View selectedSetRadio = activeSet.findViewById(activeSet.getCheckedRadioButtonId());
-		int setNumber = activeSet.indexOfChild(selectedSetRadio);
-		Log.d("set", "active set: " + setNumber);
-		//if(lv_actionTypes.getSelectedItemPosition() >= 0 && lv_players.getSelectedItemPosition() >= 0){
 		switch (v.getId()) {
 
 		// Serve
 		case R.id.stats_btn_serve_0:
+			db.writeServe(gameId, playerId, setNumber, 0);
 			Toast.makeText(getApplicationContext(), "servis 0",
 					Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.stats_btn_serve_1:
+			db.writeServe(gameId, playerId, setNumber, 1);
 			Toast.makeText(getApplicationContext(), "servis 1",
 					Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.stats_btn_serve_2:
+			db.writeServe(gameId, playerId, setNumber, 2);
 			Toast.makeText(getApplicationContext(), "servis 2",
 					Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.stats_btn_serve_3:
+			db.writeServe(gameId, playerId, setNumber, 3);
 			Toast.makeText(getApplicationContext(), "servis 3",
 					Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.stats_btn_serve_wa:
+			db.writeServe(gameId, playerId, setNumber, 4);
 			Toast.makeText(getApplicationContext(), "servis w/a",
 					Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.stats_btn_serve_over:
+			db.writeServe(gameId, playerId, setNumber, 5);
 			Toast.makeText(getApplicationContext(), "servis over",
 					Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.stats_btn_serve_e:
+			db.writeServe(gameId, playerId, setNumber, 6);
 			Toast.makeText(getApplicationContext(), "servis error",
 					Toast.LENGTH_SHORT).show();
 			break;
 
 		// Reception
 		case R.id.stats_btn_reception_0:
+			db.writeReception(gameId, playerId, setNumber, 0);
 			Toast.makeText(getApplicationContext(), "reception 0",
 					Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.stats_btn_reception_1:
+			db.writeReception(gameId, playerId, setNumber, 1);
 			Toast.makeText(getApplicationContext(), "reception 1",
 					Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.stats_btn_reception_2:
+			db.writeReception(gameId, playerId, setNumber, 2);
 			Toast.makeText(getApplicationContext(), "reception 2",
 					Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.stats_btn_reception_3:
+			db.writeReception(gameId, playerId, setNumber, 3);
 			Toast.makeText(getApplicationContext(), "reception 3",
 					Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.stats_btn_reception_wa:
+			db.writeReception(gameId, playerId, setNumber, 4);
 			Toast.makeText(getApplicationContext(), "reception w/a",
 					Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.stats_btn_reception_over:
+			db.writeReception(gameId, playerId, setNumber, 5);
 			Toast.makeText(getApplicationContext(), "reception over",
 					Toast.LENGTH_SHORT).show();
 			break;
 
 		// Attack
 		case R.id.stats_btn_attack_0:
+			db.writeAttack(gameId, playerId, setNumber, 0);
 			Toast.makeText(getApplicationContext(), "attack 0",
 					Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.stats_btn_attack_1:
+
+			db.writeAttack(gameId, playerId, setNumber, 1);
 			Toast.makeText(getApplicationContext(), "attack 1",
 					Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.stats_btn_attack_2:
+			db.writeAttack(gameId, playerId, setNumber, 2);
 			Toast.makeText(getApplicationContext(), "attack 2",
 					Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.stats_btn_attack_3:
+			db.writeAttack(gameId, playerId, setNumber, 3);
 			Toast.makeText(getApplicationContext(), "attack 3",
 					Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.stats_btn_attack_e:
+			db.writeAttack(gameId, playerId, setNumber, 4);
 			Toast.makeText(getApplicationContext(), "attack e",
 					Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.stats_btn_attack_ee:
+			db.writeAttack(gameId, playerId, setNumber, 5);
 			Toast.makeText(getApplicationContext(), "attack ee",
 					Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.stats_btn_attack_b:
+			db.writeAttack(gameId, playerId, setNumber, 6);
 			Toast.makeText(getApplicationContext(), "attack b",
 					Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.stats_btn_attack_bb:
+			db.writeAttack(gameId, playerId, setNumber, 7);
 			Toast.makeText(getApplicationContext(), "attack bb",
 					Toast.LENGTH_SHORT).show();
 			break;
 		default:
 			break;
 		}
-		//}else{
-		//	Toast.makeText(getApplicationContext(), "Please select a player and/or action type", Toast.LENGTH_SHORT).show();
-		//}
-	}
 
+	}
+	
+	private void alertPlayerStats( long playerId ) {
+		 AlertDialog.Builder dialog = new AlertDialog.Builder(StatisticsActivity.this);
+
+		 dialog.setTitle( "Stats" )
+		    .setIcon(R.drawable.ic_launcher)
+		    .setMessage("Hello, player id: "+playerId)
+		//  .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//		      public void onClick(DialogInterface dialoginterface, int i) {
+//		          dialoginterface.cancel();   
+//		          }})
+		    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+		        public void onClick(DialogInterface dialoginterface, int i) {                   
+		        }               
+		        }).show();
+	}
 }

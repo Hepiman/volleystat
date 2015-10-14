@@ -66,13 +66,16 @@ public class ViewGamesActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				lv = (ListView) findViewById(R.id.listview_viewGames);
-				Game g = (Game) lv.getAdapter().getItem(lv.getCheckedItemPosition());
-				
-				db.removeGame(g.getId());;
-				Toast.makeText(getApplicationContext(), g.getId()+ " " +g.getName(), Toast.LENGTH_SHORT).show();
-				games.clear();
-				games = (ArrayList<Game>) db.getAllGames();
-				notifyDataSetChanged();
+				if (lv.getCheckedItemPosition() >= 0){
+					Game g = (Game) lv.getAdapter().getItem(lv.getCheckedItemPosition());
+					db.removeGame(g.getId());;
+					Toast.makeText(getApplicationContext(), g.getId()+ " " +g.getName(), Toast.LENGTH_SHORT).show();
+					games.clear();
+					games = (ArrayList<Game>) db.getAllGames();
+					notifyDataSetChanged();
+				}else{
+					Toast.makeText(getApplicationContext(), "Please select a game",  Toast.LENGTH_SHORT).show();
+				}
 			}
 		});
 		
@@ -82,8 +85,21 @@ public class ViewGamesActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				Intent i;
-	        	i = new Intent(ctx, StatisticsActivity.class);
-	        	startActivity(i);
+				lv = (ListView) findViewById(R.id.listview_viewGames);
+				
+				if (lv.getCheckedItemPosition() >= 0){
+					Game g = (Game) lv.getAdapter().getItem(lv.getCheckedItemPosition());
+					Bundle b = new Bundle();
+					b.putInt("gameId", g.getId()); //Your id
+					b.putString("gameName", g.getName());
+					b.putString("gameScore", g.getScore());
+					//Put your id to your next Intent
+		        	i = new Intent(ctx, StatisticsActivity.class);
+		        	i.putExtras(b); 
+		        	startActivity(i);
+				}else{
+					Toast.makeText(getApplicationContext(), "Please select a game",  Toast.LENGTH_SHORT).show();
+				}
 				
 			}
 		});

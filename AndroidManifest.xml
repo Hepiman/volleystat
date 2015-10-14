@@ -49,11 +49,20 @@
         <activity
             android:name="si.krkavolley.volleystat.StatisticsActivity"
             android:label="@string/title_activity_statistics"
-            android:screenOrientation="sensorLandscape"
-            android:parentActivityName="si.krkavolley.volleystat.ViewGamesActivity" >
+            android:parentActivityName="si.krkavolley.volleystat.ViewGamesActivity"
+            android:screenOrientation="sensorLandscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="si.krkavolley.volleystat.ViewGamesActivity" />
+        </activity>
+        <activity
+            android:name="si.krkavolley.volleystat.WebViewSingleStatActivity"
+            android:label="@string/title_activity_web_view_single_stat"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:parentActivityName="si.krkavolley.volleystat.StatisticsActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="si.krkavolley.volleystat.StatisticsActivity" />
         </activity>
     </application>
 

@@ -9,6 +9,7 @@ import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -113,16 +114,18 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 			}
 		});
 		lv_players.setLongClickable(true);
-		lv_players.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-			 public boolean onItemLongClick (AdapterView<?> parent, View view, int position, long id) {
-				if (position >= 0) {
-					Player p = (Player) lv_players.getAdapter().getItem(
-							position);
-					alertPlayerStats(p.getId());
-				}
-		        return true;
-			}
-		});
+		lv_players
+				.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+					public boolean onItemLongClick(AdapterView<?> parent,
+							View view, int position, long id) {
+						if (position >= 0) {
+							Player p = (Player) lv_players.getAdapter()
+									.getItem(position);
+							displayPlayerStats(p.getId(),p.getName());
+						}
+						return true;
+					}
+				});
 
 		ArrayList<String> actionTypes = new ArrayList<String>();
 		actionTypes.add("Serve");
@@ -216,13 +219,7 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 
 	}
 
-	public void onClickStats_serve_0(View v) {
-		db.writeServe(1, 1, 1, 1);
-		Stat stat = db.getPlayerStats(1, 1);
-		Toast.makeText(getApplicationContext(),
-				"Serve 0: " + stat.getServe_0(), Toast.LENGTH_SHORT).show();
-
-	}
+	
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -364,20 +361,18 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 		}
 
 	}
-	
-	private void alertPlayerStats( long playerId ) {
-		 AlertDialog.Builder dialog = new AlertDialog.Builder(StatisticsActivity.this);
 
-		 dialog.setTitle( "Stats" )
-		    .setIcon(R.drawable.ic_launcher)
-		    .setMessage("Hello, player id: "+playerId)
-		//  .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//		      public void onClick(DialogInterface dialoginterface, int i) {
-//		          dialoginterface.cancel();   
-//		          }})
-		    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-		        public void onClick(DialogInterface dialoginterface, int i) {                   
-		        }               
-		        }).show();
+	private void displayPlayerStats(long playerId, String name) {
+
+		Intent i;
+		i = new Intent(getApplicationContext(), WebViewSingleStatActivity.class);
+		Bundle b = new Bundle();
+		b.putInt("gameId", gameId); 
+		b.putLong("playerId", playerId);
+		b.putString("playerName", name);
+
+		i.putExtras(b);
+		startActivity(i);
+
 	}
 }

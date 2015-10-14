@@ -548,29 +548,53 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		}
 	}
 
-	public Stat getPlayerStats(int playerId, int gameId) {
-		SQLiteDatabase db = this.getReadableDatabase();
-		int setNumber = 1;
-		playerId = 1;
-		gameId = 1;
-		Cursor cursor = db.query(TABLE_STATS, new String[] { "*" },
-				KEY_PLAYER_ID + "=? and " + KEY_GAME_ID + "=? and " + KEY_SET
-						+ "=?", new String[] { "" + playerId, "" + gameId,
-						"" + setNumber }, null, null, null);
-		Log.d("Cursor", "db.query successful");
-		android.database.DatabaseUtils.dumpCursor(cursor);
-		Stat stat = new Stat();
-		stat = cursorToStat(cursor);
-		Log.d("Stat", "cursor to stat success");
+	// public List<Game> getAllGames() {
+	// List<Game> games = new ArrayList<Game>();
+	//
+	// String query = "SELECT * FROM " + TABLE_GAME;
+	//
+	// SQLiteDatabase db = this.getReadableDatabase();
+	// Cursor c = db.rawQuery(query, null);
+	//
+	// // loop through and add to list
+	// if (c.moveToFirst()) {
+	// do {
+	// Game g = new Game();
+	// g.setId(c.getInt(c.getColumnIndex(KEY_ID)));
+	// g.setName(c.getString(c.getColumnIndex(KEY_GAME_NAME)));
+	// g.setDescription(c.getString(c.getColumnIndex(KEY_GAME_DESC)));
+	// g.setDate(c.getString(c.getColumnIndex(KEY_GAME_DATE)));
+	// g.setScore(c.getString(c.getColumnIndex(KEY_GAME_SCORE)));
+	//
+	// // add to list
+	// games.add(g);
+	// } while (c.moveToNext());
+	// }
+	// return games;
+	// }
 
-		return stat;
+	public List<Stat> getPlayerStats(int playerId, int gameId) {
+		List<Stat> stats = new ArrayList<Stat>();
+		SQLiteDatabase db = this.getReadableDatabase();
+
+		Cursor cursor = db.query(TABLE_STATS, new String[] { "*" },
+				KEY_PLAYER_ID + "=? and " + KEY_GAME_ID + "=?", new String[] {
+						"" + playerId, "" + gameId }, null, null, null);
+		Log.d("Cursor", "db.query successful");
+		if (cursor.moveToFirst()) {
+			do {
+				Stat stat = new Stat();
+				stat = statCursorToStat(cursor);
+				stats.add(stat);
+			} while (cursor.moveToNext());
+		}
+		return stats;
 	}
 
-	private Stat cursorToStat(Cursor cursor) {
+	private Stat statCursorToStat(Cursor cursor) {
 
 		Stat stat = new Stat();
 		if (cursor != null) {
-			cursor.moveToFirst();
 			stat.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
 			stat.setGame_id(cursor.getInt(cursor.getColumnIndex(KEY_GAME_ID)));
 			stat.setPlayer_id(cursor.getInt(cursor

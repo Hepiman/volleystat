@@ -9,5 +9,6 @@
     <string name="title_activity_view_games">ViewGamesActivity</string>
     <string name="title_activity_create_game">CreateGameActivity</string>
     <string name="title_activity_statistics">Statistika</string>
+    <string name="title_activity_web_view_single_stat">WebViewSingleStatActivity</string>
 
 </resources>

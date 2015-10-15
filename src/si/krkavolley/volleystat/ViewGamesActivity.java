@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -47,6 +48,20 @@ public class ViewGamesActivity extends Activity {
 		adapter = new ArrayAdapter<Game>(this, android.R.layout.simple_list_item_single_choice, games);
 		//arrayAdapter = new ArrayAdapter<String>(ViewGamesActivity.this, android.R.layout.simple_list_item_single_choice, games);
 		lv.setAdapter(adapter);
+		
+		lv.setLongClickable(true);
+		lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+					public boolean onItemLongClick(AdapterView<?> parent,
+							View view, int position, long id) {
+						if (position >= 0) {
+							Game g = (Game) lv.getAdapter()
+									.getItem(position);
+							displayGameStats(g.getId(),g.getName());
+							
+						}
+						return true;
+					}
+				});
 		
 		addNew = (Button) findViewById(R.id.add_new_game);
 		addNew.setOnClickListener(new View.OnClickListener() {
@@ -137,7 +152,20 @@ public class ViewGamesActivity extends Activity {
     	} else { 
     		Log.w("adapter", "Could not update list Array Adapter");
     	} 
-	} 
+	}
+	
+	private void displayGameStats(long gameId, String gameName) {
+
+		Intent i;
+		i = new Intent(getApplicationContext(), WebViewFullGameStatActivity.class);
+		Bundle b = new Bundle(); 
+		b.putLong("gameId", gameId);
+		b.putString("gameName", gameName);
+
+		i.putExtras(b);
+		startActivity(i);
+
+	}
 	
 
 }

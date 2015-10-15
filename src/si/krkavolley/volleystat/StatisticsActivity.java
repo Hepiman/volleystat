@@ -122,6 +122,7 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 							Player p = (Player) lv_players.getAdapter()
 									.getItem(position);
 							displayPlayerStats(p.getId(),p.getName());
+							
 						}
 						return true;
 					}

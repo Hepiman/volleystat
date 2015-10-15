@@ -4,6 +4,7 @@ import android.database.DatabaseUtils;
 import si.krkavolley.volleystat.Entity.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import android.content.ContentValues;
@@ -198,7 +199,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		}
 		return players;
 	}
+	public HashMap<Integer, Player> getAllPlayersHashMap() {
+		HashMap<Integer, Player> map = new HashMap<Integer, Player>();
+		
+		String query = "SELECT * FROM " + TABLE_PLAYER + " ORDER BY "
+				+ KEY_PLAYER_NAME;
+		// Log.e(LOG, query);
 
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor c = db.rawQuery(query, null);
+
+		// loop through and add to list
+		if (c.moveToFirst()) {
+			do {
+				Player e = new Player();
+				e.setId(c.getInt(c.getColumnIndex(KEY_ID)));
+				e.setName(c.getString(c.getColumnIndex(KEY_PLAYER_NAME)));
+				e.setDescription(c.getString(c.getColumnIndex(KEY_PLAYER_DESC)));
+
+				// add to list
+				map.put(e.getId(), e);
+			} while (c.moveToNext());
+		}
+		return map;
+	}
+	
+	
 	// Create a game
 	public long createGame(Game game) {
 		SQLiteDatabase db = this.getWritableDatabase();
@@ -557,6 +583,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				KEY_PLAYER_ID + "=? and " + KEY_GAME_ID + "=? ORDER BY " + KEY_SET, new String[] {
 						"" + playerId, "" + gameId }, null, null, null);
 		Log.d("Cursor", "db.query successful");
+		
 		if (cursor.moveToFirst()) {
 			do {
 				Stat stat = new Stat();
@@ -566,6 +593,51 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		}
 		return stats;
 	}
+	
+	public List<Stat> getFullGameStats(int gameId){
+		List<Stat> statsList = new ArrayList<Stat>();
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.query(TABLE_STATS, new String[] { 
+				KEY_ID+","
+				+KEY_PLAYER_ID+","
+				+KEY_GAME_ID+","
+				+KEY_SET
+				+", sum("+KEY_RECEPTION_3+") as "+KEY_RECEPTION_3
+				+", sum("+KEY_RECEPTION_2+") as "+KEY_RECEPTION_2
+				+", sum("+KEY_RECEPTION_1+") as "+KEY_RECEPTION_1
+				+", sum("+KEY_RECEPTION_0+") as "+KEY_RECEPTION_0
+				+", sum("+KEY_RECEPTION_wa+") as "+KEY_RECEPTION_wa
+				+", sum("+KEY_RECEPTION_over+") as "+KEY_RECEPTION_over
+				+", sum("+KEY_ATTACK_3+") as "+KEY_ATTACK_3
+				+", sum("+KEY_ATTACK_2+") as "+KEY_ATTACK_2
+				+", sum("+KEY_ATTACK_1+") as "+KEY_ATTACK_1
+				+", sum("+KEY_ATTACK_0+") as "+KEY_ATTACK_0
+				+", sum("+KEY_ATTACK_e+") as "+KEY_ATTACK_e
+				+", sum("+KEY_ATTACK_ee+") as "+KEY_ATTACK_ee
+				+", sum("+KEY_ATTACK_b+") as "+KEY_ATTACK_b
+				+", sum("+KEY_ATTACK_bb+") as "+KEY_ATTACK_bb
+				+", sum("+KEY_SERVE_3+") as "+KEY_SERVE_3
+				+", sum("+KEY_SERVE_2+") as "+KEY_SERVE_2
+				+", sum("+KEY_SERVE_1+") as "+KEY_SERVE_1
+				+", sum("+KEY_SERVE_0+") as "+KEY_SERVE_0
+				+", sum("+KEY_SERVE_wa+") as "+KEY_SERVE_wa
+				+", sum("+KEY_SERVE_over+") as "+KEY_SERVE_over
+				+", sum("+KEY_SERVE_e+") as "+KEY_SERVE_e
+				+" "},
+				KEY_GAME_ID + "=? " , new String[] {
+						"" + gameId},  KEY_PLAYER_ID , null, null);
+		Log.d("Cursor", ""+DatabaseUtils.dumpCursorToString(cursor));
+		if (cursor.moveToFirst()) {
+			do {
+				Stat stat = new Stat();
+				stat = statCursorToStat(cursor);
+				statsList.add(stat);
+			} while (cursor.moveToNext());
+		}
+		//DatabaseUtils.dumpCursorToString(cursor);
+		return statsList;
+	}
+	
 
 	private Stat statCursorToStat(Cursor cursor) {
 

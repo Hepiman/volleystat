@@ -58,7 +58,25 @@
         <activity
             android:name="si.krkavolley.volleystat.WebViewSingleStatActivity"
             android:label="@string/title_activity_web_view_single_stat"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:parentActivityName="si.krkavolley.volleystat.StatisticsActivity"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="si.krkavolley.volleystat.StatisticsActivity" />
+        </activity>
+        <activity
+            android:name="si.krkavolley.volleystat.WebViewFullGameStatsActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_web_view_full_game_stats"
+            android:parentActivityName="si.krkavolley.volleystat.StatisticsActivity"
+            android:theme="@style/FullscreenTheme" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="si.krkavolley.volleystat.StatisticsActivity" />
+        </activity>
+        <activity
+            android:name="si.krkavolley.volleystat.WebViewFullGameStatActivity"
+            android:label="@string/title_activity_web_view_full_game_stat"
             android:parentActivityName="si.krkavolley.volleystat.StatisticsActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

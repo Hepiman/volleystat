@@ -626,7 +626,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+" "},
 				KEY_GAME_ID + "=? " , new String[] {
 						"" + gameId},  KEY_PLAYER_ID , null, null);
-		Log.d("Cursor", ""+DatabaseUtils.dumpCursorToString(cursor));
+		//Log.d("Cursor", ""+DatabaseUtils.dumpCursorToString(cursor));
 		if (cursor.moveToFirst()) {
 			do {
 				Stat stat = new Stat();
@@ -636,6 +636,45 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		}
 		//DatabaseUtils.dumpCursorToString(cursor);
 		return statsList;
+	}
+	public Stat getFullGameStatsSum(int gameId){
+		Stat stat = new Stat();
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.query(TABLE_STATS, new String[] { 
+				KEY_ID+","
+				+KEY_PLAYER_ID+","
+				+KEY_GAME_ID+","
+				+KEY_SET
+				+", sum("+KEY_RECEPTION_3+") as "+KEY_RECEPTION_3
+				+", sum("+KEY_RECEPTION_2+") as "+KEY_RECEPTION_2
+				+", sum("+KEY_RECEPTION_1+") as "+KEY_RECEPTION_1
+				+", sum("+KEY_RECEPTION_0+") as "+KEY_RECEPTION_0
+				+", sum("+KEY_RECEPTION_wa+") as "+KEY_RECEPTION_wa
+				+", sum("+KEY_RECEPTION_over+") as "+KEY_RECEPTION_over
+				+", sum("+KEY_ATTACK_3+") as "+KEY_ATTACK_3
+				+", sum("+KEY_ATTACK_2+") as "+KEY_ATTACK_2
+				+", sum("+KEY_ATTACK_1+") as "+KEY_ATTACK_1
+				+", sum("+KEY_ATTACK_0+") as "+KEY_ATTACK_0
+				+", sum("+KEY_ATTACK_e+") as "+KEY_ATTACK_e
+				+", sum("+KEY_ATTACK_ee+") as "+KEY_ATTACK_ee
+				+", sum("+KEY_ATTACK_b+") as "+KEY_ATTACK_b
+				+", sum("+KEY_ATTACK_bb+") as "+KEY_ATTACK_bb
+				+", sum("+KEY_SERVE_3+") as "+KEY_SERVE_3
+				+", sum("+KEY_SERVE_2+") as "+KEY_SERVE_2
+				+", sum("+KEY_SERVE_1+") as "+KEY_SERVE_1
+				+", sum("+KEY_SERVE_0+") as "+KEY_SERVE_0
+				+", sum("+KEY_SERVE_wa+") as "+KEY_SERVE_wa
+				+", sum("+KEY_SERVE_over+") as "+KEY_SERVE_over
+				+", sum("+KEY_SERVE_e+") as "+KEY_SERVE_e
+				+" "},
+				KEY_GAME_ID + "=? " , new String[] {
+						"" + gameId},  KEY_GAME_ID , null, null);
+		//Log.d("Cursor", ""+DatabaseUtils.dumpCursorToString(cursor));
+		if (cursor.moveToFirst()) {
+			stat = statCursorToStat(cursor);
+		}
+		//DatabaseUtils.dumpCursorToString(cursor);
+		return stat;
 	}
 	
 

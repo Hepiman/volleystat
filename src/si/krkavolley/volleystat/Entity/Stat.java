@@ -351,5 +351,33 @@ public class Stat implements Parcelable {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+	
+	public int getReceptionsTotal(){
+		return (this.reception_0+this.reception_1+this.reception_2+this.reception_3+this.reception_over+this.reception_wa);
+	}
+	public int getReceptionsPositive(){
+		return ((100*(this.reception_3+this.reception_2))/getReceptionsTotal());
+	}
+	public int getReceptionIdeal(){
+		return ((100*(this.reception_3))/getReceptionsTotal());
+	}
+	public int getReceptionEff(){
+		return (100*((this.reception_3+this.reception_2+this.reception_1)-(this.reception_0+this.reception_over+this.reception_wa)))/getReceptionsTotal();
+	}
+	public int getAttacksTotal(){
+		return (this.attack_0+this.attack_1+this.attack_2+this.attack_3+this.attack_b+this.attack_bb+this.attack_e+this.attack_ee);
+	}
+	public int getAttackPoints(){
+		return (this.attack_3+this.attack_2);
+	}
+	public int getAttackEff(){
+		return (100*(getAttackPoints())/getAttacksTotal());
+	}
+	public int getServeTotal(){
+		return (this.serve_0+this.serve_1+this.serve_2+this.serve_3+this.serve_e+this.serve_over+this.serve_wa);
+	}
+	public int getTotalPoints(){
+		return (this.attack_3+this.attack_2+this.serve_wa); //TODO manjkajo toèke iz bloka!!!
+	}
 
 }

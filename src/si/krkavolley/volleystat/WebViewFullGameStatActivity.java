@@ -42,15 +42,71 @@ public class WebViewFullGameStatActivity extends Activity {
 		List<Stat> stats = db.getFullGameStats((int)gameId);
 		
 		myWebView = (WebView) findViewById(R.id.webViewFullGameStat);
-		String htmlDocument = "<html><head><style>td{padding: 3px 7px;}</style></head><body><h1>"+gameName+"</h1>";
+		String htmlDocument = "<html><head><style>td{padding: 3px 7px; text-align:center;}</style></head><body><h1>"+gameName+"</h1>";
+		
+		htmlDocument+= "<table>"
+				+"<tr style='font-weight: bold;'>"
+				+"<td style='text-align:right;'>Player</td>"
+				+"<td>Rec total</td>"
+				+ "<td>W/A</td>"
+				+"<td>Rec pos</td>"
+				+"<td>Rec ideal</td>"
+				+"<td>Att Total</td>"
+				+"<td>Att points</td>"
+				+"<td>Att %</td>"
+				+"<td>Serve Total</td>"
+				+"<td>W/A</td>"
+				+"<td>Err</td>"
+				+"<td>Total points</td>"
+				+"</tr>";
+		
 		for(int i = 0; i < stats.size(); i++){
-			htmlDocument+= "<table>"
-							+"<tr>"
-							+"<td>Rec pos</td>"
-							+"<td>Rec ideal</td>"
-							//TODO design a display 
-			htmlDocument+= stats.get(i).getAttack_0() + "<br/>";
+			int totalReceptions = stats.get(i).getReception_0()+stats.get(i).getReception_1()+stats.get(i).getReception_2()
+					+stats.get(i).getReception_3()+stats.get(i).getReception_wa()+stats.get(i).getReception_over();
+			int pos = 0, ideal = 0;
+			if(totalReceptions>0){
+				
+			}
+			int totalAttacks = stats.get(i).getAttack_0()+stats.get(i).getAttack_1()+stats.get(i).getAttack_2()+stats.get(i).getAttack_3()
+					+stats.get(i).getAttack_e()+stats.get(i).getAttack_ee()+stats.get(i).getAttack_b()+stats.get(i).getAttack_bb();
+			int attackEff = 0;
+			if (totalAttacks>0){
+				attackEff = (100*(stats.get(i).getAttack_3()+stats.get(i).getAttack_2())/totalAttacks);
+			}
+			int totalServe = stats.get(i).getServe_0()+stats.get(i).getServe_1()+stats.get(i).getServe_2()+stats.get(i).getServe_3()
+					+stats.get(i).getServe_wa()+stats.get(i).getServe_over()+stats.get(i).getServe_e();
+			htmlDocument+= "<tr>"
+					+"<td style='text-align: right; font-weight: bold;'>"+playerMap.get(stats.get(i).getPlayer_id())+"</td>"
+					+"<td>" + isZero(totalReceptions)+"</td>"
+					+"<td>"+isZero(stats.get(i).getReception_wa())+"</td>"
+					+"<td>"+isZero(pos)+"</td>"
+					+"<td>"+isZero(ideal)+"</td>"
+					+"<td>"+isZero(totalAttacks)+"</td>"
+					+"<td>"+isZero(stats.get(i).getAttack_3()+stats.get(i).getAttack_2())+"</td>"
+					+"<td>"+isZero(attackEff)+"</td>"
+					+"<td>"+isZero(totalServe)+"</td>"
+					+"<td>"+isZero(stats.get(i).getServe_wa())+"</td>"
+					+"<td>"+isZero(stats.get(i).getServe_e())+"</td>"
+					+"<td>"+isZero(stats.get(i).getServe_wa()+stats.get(i).getAttack_3()+stats.get(i).getAttack_2())+"</td>"
+					+"</tr>";
 		}
+		
+		Stat statsSum = db.getFullGameStatsSum((int)gameId);
+		htmlDocument+="<tr style='font-weight: bold;'>"
+				+"<td style='text-align: right; font-weight: bold;'>Totals</td>"
+				+"<td>" + isZero(statsSum.getReceptionsTotal())+"</td>"
+				+"<td>"+isZero(statsSum.getReception_wa())+"</td>"
+				+"<td>"+isZero(statsSum.getReceptionsPositive())+"%</td>"
+				+"<td>"+isZero(statsSum.getReceptionIdeal())+"%</td>"
+				+"<td>"+isZero(statsSum.getAttacksTotal())+"</td>"
+				+"<td>"+isZero(statsSum.getAttackPoints())+"</td>"
+				+"<td>"+isZero(statsSum.getAttackEff())+"</td>"
+				+"<td>"+isZero(statsSum.getServeTotal())+"</td>"
+				+"<td>"+isZero(statsSum.getServe_wa())+"</td>"
+				+"<td>"+isZero(statsSum.getServe_e())+"</td>"
+				+"<td>"+isZero(statsSum.getTotalPoints())+"</td>"
+				+"</tr>";
+		htmlDocument+="</table>";
 		
 		htmlDocument += "</body></html>";
 		myWebView.loadDataWithBaseURL(null, htmlDocument, "text/HTML", "UTF-8",
@@ -76,6 +132,13 @@ public class WebViewFullGameStatActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
+	
+	public String isZero(int num) {
+		if (num == 0)
+			return "-";
+		else {
+			return "" + num;
+		}
+	}
 
 }

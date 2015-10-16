@@ -15,6 +15,7 @@ public class Stat implements Parcelable {
 	int attack_3, attack_2, attack_1, attack_0, attack_e, attack_ee, attack_b,
 			attack_bb;
 	int serve_3, serve_2, serve_1, serve_0, serve_wa, serve_over, serve_e;
+	int block;
 
 	public Stat() {
 
@@ -26,6 +27,12 @@ public class Stat implements Parcelable {
 
 	public int getGame_id() {
 		return game_id;
+	}
+	public void setBlock(int block){
+		this.block = block;
+	}
+	public int getBlock(){
+		return this.block;
 	}
 
 	public void setGame_id(int game_id) {
@@ -244,6 +251,7 @@ public class Stat implements Parcelable {
 		this.serve_wa = in.readInt();
 		this.serve_over = in.readInt();
 		this.serve_e = in.readInt();
+		this.block = in.readInt();
 	}
 
 	public Stat(int game_id, int player_id, int game_set) {
@@ -271,6 +279,7 @@ public class Stat implements Parcelable {
 		this.serve_wa = 0;
 		this.serve_over = 0;
 		this.serve_e = 0;
+		this.block = 0;
 	}
 
 	public Stat(int id, int game_id, int player_id, int game_set,
@@ -278,7 +287,7 @@ public class Stat implements Parcelable {
 			int reception_wa, int reception_over, int attack_3, int attack_2,
 			int attack_1, int attack_0, int attack_e, int attack_ee,
 			int attack_b, int attack_bb, int serve_3, int serve_2, int serve_1,
-			int serve_0, int serve_wa, int serve_over, int serve_e) {
+			int serve_0, int serve_wa, int serve_over, int serve_e, int block) {
 		super();
 		this.id = id;
 		this.game_id = game_id;
@@ -305,6 +314,7 @@ public class Stat implements Parcelable {
 		this.serve_wa = serve_wa;
 		this.serve_over = serve_over;
 		this.serve_e = serve_e;
+		this.block = block;
 	}
 
 	public void writeToParcel(Parcel dest, int flags) {
@@ -334,6 +344,8 @@ public class Stat implements Parcelable {
 		dest.writeInt(serve_wa);
 		dest.writeInt(serve_over);
 		dest.writeInt(serve_e);
+		
+		dest.writeInt(block);
 	}
 
 	public static final Parcelable.Creator<Stat> CREATOR = new Parcelable.Creator<Stat>() {
@@ -356,13 +368,25 @@ public class Stat implements Parcelable {
 		return (this.reception_0+this.reception_1+this.reception_2+this.reception_3+this.reception_over+this.reception_wa);
 	}
 	public int getReceptionsPositive(){
+		if(getReceptionsTotal()>0){
 		return ((100*(this.reception_3+this.reception_2))/getReceptionsTotal());
+		}else{
+			return 0;
+		}
 	}
 	public int getReceptionIdeal(){
-		return ((100*(this.reception_3))/getReceptionsTotal());
+		if(getReceptionsTotal()>0){
+			return ((100*(this.reception_3))/getReceptionsTotal());
+		}else{
+			return 0;
+		}
 	}
 	public int getReceptionEff(){
-		return (100*((this.reception_3+this.reception_2+this.reception_1)-(this.reception_0+this.reception_over+this.reception_wa)))/getReceptionsTotal();
+		if(getReceptionsTotal()>0){
+			return (100*((this.reception_3+this.reception_2+this.reception_1)-(this.reception_0+this.reception_over+this.reception_wa)))/getReceptionsTotal();
+		}else{
+			return 0;
+		}
 	}
 	public int getAttacksTotal(){
 		return (this.attack_0+this.attack_1+this.attack_2+this.attack_3+this.attack_b+this.attack_bb+this.attack_e+this.attack_ee);
@@ -371,13 +395,17 @@ public class Stat implements Parcelable {
 		return (this.attack_3+this.attack_2);
 	}
 	public int getAttackEff(){
-		return (100*(getAttackPoints())/getAttacksTotal());
+		if(getAttacksTotal()>0){
+			return (100*(getAttackPoints())/getAttacksTotal());
+		}else{
+			return 0;
+		}
 	}
 	public int getServeTotal(){
 		return (this.serve_0+this.serve_1+this.serve_2+this.serve_3+this.serve_e+this.serve_over+this.serve_wa);
 	}
 	public int getTotalPoints(){
-		return (this.attack_3+this.attack_2+this.serve_wa); //TODO manjkajo toèke iz bloka!!!
+		return (this.attack_3+this.attack_2+this.serve_wa+this.block);
 	}
 
 }

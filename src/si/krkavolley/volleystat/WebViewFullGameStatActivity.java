@@ -57,37 +57,25 @@ public class WebViewFullGameStatActivity extends Activity {
 				+"<td>Serve Total</td>"
 				+"<td>W/A</td>"
 				+"<td>Err</td>"
+				+"<td>Blcks</td>"
 				+"<td>Total points</td>"
 				+"</tr>";
 		
 		for(int i = 0; i < stats.size(); i++){
-			int totalReceptions = stats.get(i).getReception_0()+stats.get(i).getReception_1()+stats.get(i).getReception_2()
-					+stats.get(i).getReception_3()+stats.get(i).getReception_wa()+stats.get(i).getReception_over();
-			int pos = 0, ideal = 0;
-			if(totalReceptions>0){
-				
-			}
-			int totalAttacks = stats.get(i).getAttack_0()+stats.get(i).getAttack_1()+stats.get(i).getAttack_2()+stats.get(i).getAttack_3()
-					+stats.get(i).getAttack_e()+stats.get(i).getAttack_ee()+stats.get(i).getAttack_b()+stats.get(i).getAttack_bb();
-			int attackEff = 0;
-			if (totalAttacks>0){
-				attackEff = (100*(stats.get(i).getAttack_3()+stats.get(i).getAttack_2())/totalAttacks);
-			}
-			int totalServe = stats.get(i).getServe_0()+stats.get(i).getServe_1()+stats.get(i).getServe_2()+stats.get(i).getServe_3()
-					+stats.get(i).getServe_wa()+stats.get(i).getServe_over()+stats.get(i).getServe_e();
 			htmlDocument+= "<tr>"
 					+"<td style='text-align: right; font-weight: bold;'>"+playerMap.get(stats.get(i).getPlayer_id())+"</td>"
-					+"<td>" + isZero(totalReceptions)+"</td>"
+					+"<td>" + isZero(stats.get(i).getReceptionsTotal())+"</td>"
 					+"<td>"+isZero(stats.get(i).getReception_wa())+"</td>"
-					+"<td>"+isZero(pos)+"</td>"
-					+"<td>"+isZero(ideal)+"</td>"
-					+"<td>"+isZero(totalAttacks)+"</td>"
-					+"<td>"+isZero(stats.get(i).getAttack_3()+stats.get(i).getAttack_2())+"</td>"
-					+"<td>"+isZero(attackEff)+"</td>"
-					+"<td>"+isZero(totalServe)+"</td>"
+					+"<td>"+isZero(stats.get(i).getReceptionsPositive())+"%</td>"
+					+"<td>"+isZero(stats.get(i).getReceptionIdeal())+"%</td>"
+					+"<td>"+isZero(stats.get(i).getAttacksTotal())+"</td>"
+					+"<td>"+isZero(stats.get(i).getAttackPoints())+"</td>"
+					+"<td>"+isZero(stats.get(i).getAttackEff())+"%</td>"
+					+"<td>"+isZero(stats.get(i).getServeTotal())+"</td>"
 					+"<td>"+isZero(stats.get(i).getServe_wa())+"</td>"
 					+"<td>"+isZero(stats.get(i).getServe_e())+"</td>"
-					+"<td>"+isZero(stats.get(i).getServe_wa()+stats.get(i).getAttack_3()+stats.get(i).getAttack_2())+"</td>"
+					+"<td>"+isZero(stats.get(i).getBlock())+"</td>"
+					+"<td>"+isZero(stats.get(i).getTotalPoints())+"</td>"
 					+"</tr>";
 		}
 		
@@ -100,11 +88,12 @@ public class WebViewFullGameStatActivity extends Activity {
 				+"<td>"+isZero(statsSum.getReceptionIdeal())+"%</td>"
 				+"<td>"+isZero(statsSum.getAttacksTotal())+"</td>"
 				+"<td>"+isZero(statsSum.getAttackPoints())+"</td>"
-				+"<td>"+isZero(statsSum.getAttackEff())+"</td>"
+				+"<td>"+isZero(statsSum.getAttackEff())+"%</td>"
 				+"<td>"+isZero(statsSum.getServeTotal())+"</td>"
 				+"<td>"+isZero(statsSum.getServe_wa())+"</td>"
 				+"<td>"+isZero(statsSum.getServe_e())+"</td>"
-				+"<td>"+isZero(statsSum.getTotalPoints())+"</td>"
+				+"<td>"+isZero(statsSum.getBlock())+"</td>"
+				+"<td style='font-weight: bold;'>"+isZero(statsSum.getTotalPoints())+"</td>"
 				+"</tr>";
 		htmlDocument+="</table>";
 		

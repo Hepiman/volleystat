@@ -46,12 +46,17 @@ public class WebViewSingleStatActivity extends Activity {
 		myWebView = (WebView) findViewById(R.id.webViewSingleStat);
 		String htmlDocument = "<html><head><style>td{padding: 3px 7px;}</style></head><body><h1>"+playerName+"</h1>";
 		if(stats.size() > 0){
-			htmlDocument += "<p style='text-decoration: underline;' ><strong>SUMMARY: "+playerTotals.getTotalPoints()
+			htmlDocument += "<p style='text-decoration: underline;' ><strong>SUMMARY: </strong><p/>"
+					+"<p><strong>"+playerTotals.getTotalPoints()
 					+" points</strong> (aces:"+playerTotals.getServe_wa()+", blocks:" + playerTotals.getBlock()+")";
 			if(playerTotals.getReceptionsTotal()>0){
 				htmlDocument+= ", receptions: "+playerTotals.getReceptionsTotal() + " ("+playerTotals.getReceptionsPositive()+"% / "
-						+ playerTotals.getReceptionIdeal()+"%)</p>";
+						+ playerTotals.getReceptionIdeal()+"%)";
 			}
+			if(playerTotals.getAttacksTotal()>0){
+				htmlDocument+= ", attacks: "+playerTotals.getAttackPoints()+"/"+playerTotals.getAttacksTotal() + " ("+playerTotals.getAttackEff()+"%)";
+			}
+			htmlDocument +="</p>";
 			htmlDocument += "<h3>Sprejem</h3>"
 					+ "<table style='border: 1px solid gray; text-align: center; padding-left: 8px; padding-right: 8px; padding-top:5px;'>"
 					+ "<tr style='font-weight: bold'>"

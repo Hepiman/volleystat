@@ -24,7 +24,7 @@ import android.os.Build;
 
 public class ViewGamesActivity extends Activity {
 
-	Button addNew, startStats, btnRemove;
+	Button addNew, startStats, btnRemove, btnEdit;
 	Context ctx;
 	ListView lv;
 	DatabaseHelper db;
@@ -119,6 +119,23 @@ public class ViewGamesActivity extends Activity {
 			}
 		});
 		
+		btnEdit = (Button) findViewById(R.id.button_game_edit);
+		btnEdit.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				lv =(ListView) findViewById(R.id.listview_viewGames);
+				if(lv.getCheckedItemPosition() >=0){
+					
+					Game g = (Game) lv.getAdapter().getItem(lv.getCheckedItemPosition());
+					editGame(g);
+				}else{
+					Toast.makeText(getApplicationContext(), "Please select a game",  Toast.LENGTH_SHORT).show();
+				}
+				
+			}
+		});
+		
 		
 	}
 
@@ -165,6 +182,17 @@ public class ViewGamesActivity extends Activity {
 		i.putExtras(b);
 		startActivity(i);
 
+	}
+	private void editGame(Game g){
+		Intent i;
+		i = new Intent(getApplicationContext(), EditGameActivity.class);
+		Bundle b = new Bundle();
+		b.putLong("gameId", g.getId());
+		b.putString("gameName", g.getName());
+		b.putString("gameDesc", g.getDescription());
+		b.putString("gameDate", g.getDate());
+		i.putExtras(b);
+		startActivity(i);
 	}
 	
 

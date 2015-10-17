@@ -47,6 +47,7 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 	Button btn_a0, btn_a1, btn_a2, btn_a3, btn_ae, btn_aee, btn_ab, btn_abb;
 	// serve buttons
 	Button btn_s0, btn_s1, btn_s2, btn_s3, btn_swa, btn_sover, btn_se;
+	Button btn_block, btn_opp_err;
 
 	RadioGroup setNumberGroup;
 
@@ -168,6 +169,29 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 					break;
 				}
 
+			}
+		});
+		btn_opp_err = (Button) findViewById(R.id.stats_btn_opp_err);
+		btn_opp_err.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+			
+				db.writeOppErr(gameId, setNumber);
+				Toast.makeText(getApplicationContext(), "Opponent err counter increased", Toast.LENGTH_SHORT).show();
+				
+			}
+		});
+		
+		btn_block = (Button) findViewById(R.id.stats_btn_block);
+		btn_block.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+			
+				db.writeBlock(gameId, playerId, setNumber);
+				Toast.makeText(getApplicationContext(), "Block increased", Toast.LENGTH_SHORT).show();
+				
 			}
 		});
 	}

@@ -3,6 +3,7 @@ package si.krkavolley.volleystat;
 import java.util.HashMap;
 import java.util.List;
 
+import si.krkavolley.volleystat.Entity.OpponentError;
 import si.krkavolley.volleystat.Entity.Stat;
 import android.app.Activity;
 import android.app.ActionBar;
@@ -41,6 +42,8 @@ public class WebViewFullGameStatActivity extends Activity {
 		playerMap = db.getAllPlayersHashMap();
 		List<Stat> stats = db.getFullGameStats((int)gameId);
 		
+	
+		
 		myWebView = (WebView) findViewById(R.id.webViewFullGameStat);
 		String htmlDocument = "<html><head><style>td{padding: 3px 7px; text-align:center;}</style></head><body><h1>"+gameName+"</h1>";
 		
@@ -54,7 +57,7 @@ public class WebViewFullGameStatActivity extends Activity {
 				+"<td>Att Total</td>"
 				+"<td>Att points</td>"
 				+"<td>Att %</td>"
-				+"<td>Serve Total</td>"
+				+"<td>Srv Total</td>"
 				+"<td>W/A</td>"
 				+"<td>Err</td>"
 				+"<td>Blcks</td>"
@@ -96,7 +99,13 @@ public class WebViewFullGameStatActivity extends Activity {
 				+"<td style='font-weight: bold;'>"+isZero(statsSum.getTotalPoints())+"</td>"
 				+"</tr>";
 		htmlDocument+="</table>";
+		OpponentError oppErr = db.getOppErrByGameId((int)gameId);
+		if(oppErr != null){
+		htmlDocument += "<h3>Opponent errors</h3>";
 		
+		htmlDocument += "<p>1.set:<strong>"+oppErr.getErr_1()+"</strong> 2.set:<strong>"+oppErr.getErr_2()+"</strong> 3.set:<strong>"
+		+oppErr.getErr_3()+"</strong> 4.set:<strong>"+oppErr.getErr_4()+"</strong> 5.set:<strong>"+oppErr.getErr_1()+"</strong></p>";
+		}
 		htmlDocument += "</body></html>";
 		myWebView.loadDataWithBaseURL(null, htmlDocument, "text/HTML", "UTF-8",
 				null);

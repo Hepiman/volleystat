@@ -82,6 +82,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="si.krkavolley.volleystat.StatisticsActivity" />
         </activity>
+        <activity
+            android:name="si.krkavolley.volleystat.EditGameActivity"
+            android:label="@string/title_activity_edit_game"
+            android:parentActivityName="si.krkavolley.volleystat.ViewGamesActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="si.krkavolley.volleystat.ViewGamesActivity" />
+        </activity>
     </application>
 
 </manifest>

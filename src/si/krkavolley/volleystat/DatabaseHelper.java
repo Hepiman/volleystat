@@ -22,7 +22,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	private static final String LOG = "DatabaseHelper";
 
 	// DB version
-	private static final int DB_VERSION = 7;
+	private static final int DB_VERSION = 8;
 
 	// DB name
 	private static final String DB_NAME = "volleystat_db";
@@ -86,6 +86,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 	//
 	private static final String KEY_BLOCK = "block";
+	private static final String KEY_OTHER_ERROR ="other_error";
 
 	// Table create statements
 	private static final String CREATE_TABLE_PLAYER = "CREATE TABLE "
@@ -111,7 +112,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ KEY_SERVE_2 + " INTEGER, " + KEY_SERVE_1 + " INTEGER, "
 			+ KEY_SERVE_0 + " INTEGER, " + KEY_SERVE_wa + " INTEGER, "
 			+ KEY_SERVE_e + " INTEGER, " + KEY_SERVE_over + " INTEGER, "
-			+ KEY_BLOCK + " INTEGER" + ");";
+			+ KEY_BLOCK + " INTEGER, " + KEY_OTHER_ERROR + " INTEGER"+  ");";
 
 	private static final String CREATE_TABLE_OPP_ERR = "CREATE TABLE "
 			+ TABLE_OPP_ERR + " (" + KEY_ID + " INTEGER PRIMARY KEY, "
@@ -362,6 +363,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		values.put(KEY_ATTACK_b, 0);
 		values.put(KEY_ATTACK_bb, 0);
 		values.put(KEY_BLOCK, 0);
+		values.put(KEY_OTHER_ERROR, 0);
 
 		long statId = db.insert(TABLE_STATS, null, values);
 		Log.d(LOG, "new stat");
@@ -633,6 +635,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			writeBlock(gameId, playerId, setNumber);
 		}
 	}
+	
+	public void writeOtherError(int gameId, int playerId, int setNumber) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		SQLiteDatabase dbw = this.getWritableDatabase();
+		Cursor cursor = db.query(TABLE_STATS, new String[] { KEY_ID,
+				KEY_PLAYER_ID, KEY_GAME_ID }, KEY_PLAYER_ID + "=? and "
+				+ KEY_GAME_ID + "=? and " + KEY_SET + "=?", new String[] {
+				"" + playerId, "" + gameId, "" + setNumber }, null, null, null);
+
+		if (cursor.moveToFirst()) {
+			Log.d("Query", "seeking stats: found");
+			db.execSQL("UPDATE " + TABLE_STATS + " SET " + KEY_OTHER_ERROR + " = "
+					+ KEY_OTHER_ERROR + " + 1 WHERE " + KEY_GAME_ID + " = ? AND "
+					+ KEY_PLAYER_ID + " = ? AND " + KEY_SET + " = ?",
+					new String[] { "" + gameId, "" + playerId, "" + setNumber });
+			Log.d("db", "Counter player error increased");
+
+			db.close();
+			dbw.close();
+		} else {
+			Log.d("Query", "seeking stats: not found");
+			Stat stat = new Stat(gameId, playerId, setNumber);
+			createNewStat(stat);
+			writeOtherError(gameId, playerId, setNumber);
+		}
+	}
 
 	public void writeOppErr(int gameId, int setNumber) {
 		SQLiteDatabase db = this.getReadableDatabase();
@@ -794,7 +822,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ ", sum(" + KEY_SERVE_wa + ") as " + KEY_SERVE_wa + ", sum("
 				+ KEY_SERVE_over + ") as " + KEY_SERVE_over + ", sum("
 				+ KEY_SERVE_e + ") as " + KEY_SERVE_e + ", sum(" + KEY_BLOCK
-				+ ") as " + KEY_BLOCK + " " }, KEY_GAME_ID + "=? ",
+				+ ") as " + KEY_BLOCK + ", sum(" + KEY_OTHER_ERROR
+				+ ") as " + KEY_OTHER_ERROR + " " }, KEY_GAME_ID + "=? ",
 				new String[] { "" + gameId }, KEY_PLAYER_ID, null, null);
 		// Log.d("Cursor", ""+DatabaseUtils.dumpCursorToString(cursor));
 		if (cursor.moveToFirst()) {
@@ -833,7 +862,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ ", sum(" + KEY_SERVE_wa + ") as " + KEY_SERVE_wa + ", sum("
 				+ KEY_SERVE_over + ") as " + KEY_SERVE_over + ", sum("
 				+ KEY_SERVE_e + ") as " + KEY_SERVE_e + ", sum(" + KEY_BLOCK
-				+ ") as " + KEY_BLOCK + " " }, KEY_GAME_ID + "=? ",
+				+ ") as " + KEY_BLOCK +  ", sum(" + KEY_OTHER_ERROR
+				+ ") as " + KEY_OTHER_ERROR + " " }, KEY_GAME_ID + "=? ",
 				new String[] { "" + gameId }, KEY_GAME_ID, null, null);
 		 Log.d("Cursor", ""+DatabaseUtils.dumpCursorToString(cursor));
 		if (cursor.moveToFirst()) {
@@ -868,7 +898,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ ", sum(" + KEY_SERVE_wa + ") as " + KEY_SERVE_wa + ", sum("
 				+ KEY_SERVE_over + ") as " + KEY_SERVE_over + ", sum("
 				+ KEY_SERVE_e + ") as " + KEY_SERVE_e + ", sum(" + KEY_BLOCK
-				+ ") as " + KEY_BLOCK + " " }, KEY_GAME_ID + "=? and "
+				+ ") as " + KEY_BLOCK +  ", sum(" + KEY_OTHER_ERROR
+				+ ") as " + KEY_OTHER_ERROR + " " }, KEY_GAME_ID + "=? and "
 				+ KEY_PLAYER_ID + "=?", new String[] { "" + gameId,
 				"" + playerId }, KEY_GAME_ID, null, null);
 		// Log.d("Cursor", ""+DatabaseUtils.dumpCursorToString(cursor));
@@ -919,6 +950,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			stat.setServe_over(cursor.getInt(cursor
 					.getColumnIndex(KEY_SERVE_over)));
 			stat.setBlock(cursor.getInt(cursor.getColumnIndex(KEY_BLOCK)));
+
+			stat.setOther_error(cursor.getInt(cursor.getColumnIndex(KEY_OTHER_ERROR)));
 		}
 		return stat;
 	}

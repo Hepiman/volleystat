@@ -48,7 +48,7 @@ public class WebViewSingleStatActivity extends Activity {
 		if(stats.size() > 0){
 			htmlDocument += "<p style='text-decoration: underline;' ><strong>SUMMARY: </strong><p/>"
 					+"<p><strong>"+playerTotals.getTotalPoints()
-					+" points</strong> (aces:"+playerTotals.getServe_wa()+", blocks:" + playerTotals.getBlock()+")";
+					+" points</strong> (aces: "+playerTotals.getServe_wa()+", blocks: " + playerTotals.getBlock()+", errors: " + playerTotals.getTotalErrors();
 			if(playerTotals.getReceptionsTotal()>0){
 				htmlDocument+= ", receptions: "+playerTotals.getReceptionsTotal() + " ("+playerTotals.getReceptionsPositive()+"% / "
 						+ playerTotals.getReceptionIdeal()+"%)";
@@ -56,7 +56,7 @@ public class WebViewSingleStatActivity extends Activity {
 			if(playerTotals.getAttacksTotal()>0){
 				htmlDocument+= ", attacks: "+playerTotals.getAttackPoints()+"/"+playerTotals.getAttacksTotal() + " ("+playerTotals.getAttackEff()+"%)";
 			}
-			htmlDocument +="</p>";
+			htmlDocument +=")</p>";
 			htmlDocument += "<h3>Sprejem</h3>"
 					+ "<table style='border: 1px solid gray; text-align: center; padding-left: 8px; padding-right: 8px; padding-top:5px;'>"
 					+ "<tr style='font-weight: bold'>"

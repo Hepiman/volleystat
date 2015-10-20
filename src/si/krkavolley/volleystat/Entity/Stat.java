@@ -16,6 +16,7 @@ public class Stat implements Parcelable {
 			attack_bb;
 	int serve_3, serve_2, serve_1, serve_0, serve_wa, serve_over, serve_e;
 	int block;
+	int other_error;
 
 	public Stat() {
 
@@ -34,7 +35,12 @@ public class Stat implements Parcelable {
 	public int getBlock(){
 		return this.block;
 	}
-
+	public int getOther_error(){
+		return this.other_error;
+	}
+	public void setOther_error(int other_error){
+		this.other_error = other_error;
+	}
 	public void setGame_id(int game_id) {
 		this.game_id = game_id;
 	}
@@ -252,6 +258,7 @@ public class Stat implements Parcelable {
 		this.serve_over = in.readInt();
 		this.serve_e = in.readInt();
 		this.block = in.readInt();
+		this.other_error = in.readInt();
 	}
 
 	public Stat(int game_id, int player_id, int game_set) {
@@ -280,6 +287,7 @@ public class Stat implements Parcelable {
 		this.serve_over = 0;
 		this.serve_e = 0;
 		this.block = 0;
+		this.other_error = 0;
 	}
 
 	public Stat(int id, int game_id, int player_id, int game_set,
@@ -287,7 +295,7 @@ public class Stat implements Parcelable {
 			int reception_wa, int reception_over, int attack_3, int attack_2,
 			int attack_1, int attack_0, int attack_e, int attack_ee,
 			int attack_b, int attack_bb, int serve_3, int serve_2, int serve_1,
-			int serve_0, int serve_wa, int serve_over, int serve_e, int block) {
+			int serve_0, int serve_wa, int serve_over, int serve_e, int block, int other_error) {
 		super();
 		this.id = id;
 		this.game_id = game_id;
@@ -315,6 +323,7 @@ public class Stat implements Parcelable {
 		this.serve_over = serve_over;
 		this.serve_e = serve_e;
 		this.block = block;
+		this.other_error = other_error;
 	}
 
 	public void writeToParcel(Parcel dest, int flags) {
@@ -346,6 +355,7 @@ public class Stat implements Parcelable {
 		dest.writeInt(serve_e);
 		
 		dest.writeInt(block);
+		dest.writeInt(other_error);
 	}
 
 	public static final Parcelable.Creator<Stat> CREATOR = new Parcelable.Creator<Stat>() {
@@ -406,6 +416,9 @@ public class Stat implements Parcelable {
 	}
 	public int getTotalPoints(){
 		return (this.attack_3+this.attack_2+this.serve_wa+this.block);
+	}
+	public int getTotalErrors(){
+		return (this.attack_e + this.attack_ee + this.serve_e + this.other_error);
 	}
 
 }

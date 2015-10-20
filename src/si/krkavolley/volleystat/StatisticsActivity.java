@@ -33,7 +33,7 @@ import android.os.Build;
 public class StatisticsActivity extends Activity implements OnClickListener {
 
 	LinearLayout serveButtonsContainer, receptionButtonsContainer,
-			attackButtonsContainer;
+			attackButtonsContainer, otherButtonsContainer;
 	DatabaseHelper db;
 	ArrayList players;
 	ListView lv_players, lv_actionTypes;
@@ -47,9 +47,11 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 	Button btn_a0, btn_a1, btn_a2, btn_a3, btn_ae, btn_aee, btn_ab, btn_abb;
 	// serve buttons
 	Button btn_s0, btn_s1, btn_s2, btn_s3, btn_swa, btn_sover, btn_se;
-	Button btn_block, btn_opp_err;
+	Button btn_err, btn_block, btn_opp_err, btn_opp_att_point;
 
 	RadioGroup setNumberGroup;
+	int scoreMyTeam = 0, scoreOpponent = 0;
+	TextView scoreDisplay;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -65,10 +67,12 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 
 		bottomText = (TextView) findViewById(R.id.stats_bottom_text);
 		bottomText.setText(gameName + " (" + gameScore + ")");
+		scoreDisplay = (TextView) findViewById(R.id.stats_score_text);
 
 		serveButtonsContainer = (LinearLayout) findViewById(R.id.container_serve_buttons);
 		attackButtonsContainer = (LinearLayout) findViewById(R.id.container_attack_buttons);
 		receptionButtonsContainer = (LinearLayout) findViewById(R.id.container_reception_buttons);
+		otherButtonsContainer = (LinearLayout) findViewById(R.id.container_other_buttons);
 
 		setNumberGroup = (RadioGroup) findViewById(R.id.radioGroup_setNumbers);
 		setNumberGroup
@@ -133,6 +137,7 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 		actionTypes.add("Serve");
 		actionTypes.add("Reception");
 		actionTypes.add("Attack");
+		actionTypes.add("Other");
 
 		lv_actionTypes = (ListView) findViewById(R.id.listview_action_type);
 		lv_actionTypes.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
@@ -151,19 +156,27 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 					serveButtonsContainer.setVisibility(View.VISIBLE);
 					receptionButtonsContainer.setVisibility(View.GONE);
 					attackButtonsContainer.setVisibility(View.GONE);
+					otherButtonsContainer.setVisibility(View.GONE);
 					break;
 
 				case 1:
 					serveButtonsContainer.setVisibility(View.GONE);
 					receptionButtonsContainer.setVisibility(View.VISIBLE);
 					attackButtonsContainer.setVisibility(View.GONE);
+					otherButtonsContainer.setVisibility(View.GONE);
 					break;
 
 				case 2:
 					serveButtonsContainer.setVisibility(View.GONE);
 					receptionButtonsContainer.setVisibility(View.GONE);
 					attackButtonsContainer.setVisibility(View.VISIBLE);
+					otherButtonsContainer.setVisibility(View.GONE);
 					break;
+				case 3:
+					otherButtonsContainer.setVisibility(View.VISIBLE);
+					serveButtonsContainer.setVisibility(View.GONE);
+					receptionButtonsContainer.setVisibility(View.GONE);
+					attackButtonsContainer.setVisibility(View.GONE);
 
 				default:
 					break;
@@ -176,7 +189,8 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 			
 			@Override
 			public void onClick(View v) {
-			
+				scoreMyTeam++;
+				updateScoreDisplay();
 				db.writeOppErr(gameId, setNumber);
 				Toast.makeText(getApplicationContext(), "Opponent err counter increased", Toast.LENGTH_SHORT).show();
 				
@@ -188,9 +202,32 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 			
 			@Override
 			public void onClick(View v) {
-			
+				scoreMyTeam++;
+				updateScoreDisplay();
 				db.writeBlock(gameId, playerId, setNumber);
 				Toast.makeText(getApplicationContext(), "Block increased", Toast.LENGTH_SHORT).show();
+				
+			}
+		});
+		btn_opp_att_point = (Button) findViewById(R.id.stats_btn_opp_att_point);
+		btn_opp_att_point.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				scoreOpponent++;
+				updateScoreDisplay();
+				Toast.makeText(getApplicationContext(), "Opponent attack point", Toast.LENGTH_SHORT).show();
+			}
+		});
+		btn_err = (Button) findViewById(R.id.stats_btn_error);
+		btn_err.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				db.writeOtherError(gameId, playerId, setNumber);
+				Toast.makeText(getApplicationContext(), "Player error", Toast.LENGTH_SHORT).show();
+				scoreOpponent++;
+				updateScoreDisplay();
 				
 			}
 		});
@@ -293,6 +330,8 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 			break;
 		case R.id.stats_btn_serve_wa:
 			db.writeServe(gameId, playerId, setNumber, 4);
+			scoreMyTeam++;
+			updateScoreDisplay();
 			Toast.makeText(getApplicationContext(), "servis w/a",
 					Toast.LENGTH_SHORT).show();
 			break;
@@ -303,6 +342,8 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 			break;
 		case R.id.stats_btn_serve_e:
 			db.writeServe(gameId, playerId, setNumber, 6);
+			scoreOpponent++;
+			updateScoreDisplay();
 			Toast.makeText(getApplicationContext(), "servis error",
 					Toast.LENGTH_SHORT).show();
 			break;
@@ -330,6 +371,8 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 			break;
 		case R.id.stats_btn_reception_wa:
 			db.writeReception(gameId, playerId, setNumber, 4);
+			scoreOpponent++;
+			updateScoreDisplay();
 			Toast.makeText(getApplicationContext(), "reception w/a",
 					Toast.LENGTH_SHORT).show();
 			break;
@@ -353,31 +396,43 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 			break;
 		case R.id.stats_btn_attack_2:
 			db.writeAttack(gameId, playerId, setNumber, 2);
+			scoreMyTeam++;
+			updateScoreDisplay();
 			Toast.makeText(getApplicationContext(), "attack 2",
 					Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.stats_btn_attack_3:
 			db.writeAttack(gameId, playerId, setNumber, 3);
+			scoreMyTeam++;
+			updateScoreDisplay();
 			Toast.makeText(getApplicationContext(), "attack 3",
 					Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.stats_btn_attack_e:
 			db.writeAttack(gameId, playerId, setNumber, 4);
+			scoreOpponent++;
+			updateScoreDisplay();
 			Toast.makeText(getApplicationContext(), "attack e",
 					Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.stats_btn_attack_ee:
 			db.writeAttack(gameId, playerId, setNumber, 5);
+			scoreOpponent++;
+			updateScoreDisplay();
 			Toast.makeText(getApplicationContext(), "attack ee",
 					Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.stats_btn_attack_b:
 			db.writeAttack(gameId, playerId, setNumber, 6);
+			scoreOpponent++;
+			updateScoreDisplay();
 			Toast.makeText(getApplicationContext(), "attack b",
 					Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.stats_btn_attack_bb:
 			db.writeAttack(gameId, playerId, setNumber, 7);
+			scoreOpponent++;
+			updateScoreDisplay();
 			Toast.makeText(getApplicationContext(), "attack bb",
 					Toast.LENGTH_SHORT).show();
 			break;
@@ -399,5 +454,9 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 		i.putExtras(b);
 		startActivity(i);
 
+	}
+	
+	public void updateScoreDisplay(){
+		scoreDisplay.setText(""+scoreMyTeam+" : "+ scoreOpponent);
 	}
 }

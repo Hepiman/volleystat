@@ -60,6 +60,7 @@ public class WebViewFullGameStatActivity extends Activity {
 				+"<td>Srv Total</td>"
 				+"<td>W/A</td>"
 				+"<td>Err</td>"
+				+"<td>Tot. Err</td>"
 				+"<td>Blcks</td>"
 				+"<td>Total points</td>"
 				+"</tr>";
@@ -77,6 +78,7 @@ public class WebViewFullGameStatActivity extends Activity {
 					+"<td>"+isZero(stats.get(i).getServeTotal())+"</td>"
 					+"<td>"+isZero(stats.get(i).getServe_wa())+"</td>"
 					+"<td>"+isZero(stats.get(i).getServe_e())+"</td>"
+					+"<td>"+isZero(stats.get(i).getTotalErrors())+"</td>"
 					+"<td>"+isZero(stats.get(i).getBlock())+"</td>"
 					+"<td>"+isZero(stats.get(i).getTotalPoints())+"</td>"
 					+"</tr>";
@@ -95,6 +97,7 @@ public class WebViewFullGameStatActivity extends Activity {
 				+"<td>"+isZero(statsSum.getServeTotal())+"</td>"
 				+"<td>"+isZero(statsSum.getServe_wa())+"</td>"
 				+"<td>"+isZero(statsSum.getServe_e())+"</td>"
+				+"<td>"+isZero(statsSum.getTotalErrors())+"</td>"
 				+"<td>"+isZero(statsSum.getBlock())+"</td>"
 				+"<td style='font-weight: bold;'>"+isZero(statsSum.getTotalPoints())+"</td>"
 				+"</tr>";
@@ -103,8 +106,8 @@ public class WebViewFullGameStatActivity extends Activity {
 		if(oppErr != null){
 		htmlDocument += "<h3>Opponent errors</h3>";
 		
-		htmlDocument += "<p>1.set:<strong>"+oppErr.getErr_1()+"</strong> 2.set:<strong>"+oppErr.getErr_2()+"</strong> 3.set:<strong>"
-		+oppErr.getErr_3()+"</strong> 4.set:<strong>"+oppErr.getErr_4()+"</strong> 5.set:<strong>"+oppErr.getErr_1()+"</strong></p>";
+		htmlDocument += "<p>1.set: <strong>"+oppErr.getErr_1()+"</strong> 2.set: <strong>"+oppErr.getErr_2()+"</strong> 3.set: <strong>"
+		+oppErr.getErr_3()+"</strong> 4.set: <strong>"+oppErr.getErr_4()+"</strong> 5.set: <strong>"+oppErr.getErr_1()+"</strong></p>";
 		}
 		htmlDocument += "</body></html>";
 		myWebView.loadDataWithBaseURL(null, htmlDocument, "text/HTML", "UTF-8",

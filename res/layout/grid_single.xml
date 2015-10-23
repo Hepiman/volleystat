@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CheckedTextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/grid_single_checked_text_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center|center_horizontal"
+    android:layout_margin="5dp"
+    android:background="@drawable/player"
+    android:checkMark="@null"
+    android:drawableTop="?android:attr/listChoiceIndicatorSingle"
+    android:gravity="center_horizontal"
+    android:padding="5dp"
+    android:text="Player Name"
+    android:textAlignment="center" />

@@ -69,12 +69,17 @@
             android:layout_weight="10"
             android:orientation="horizontal" >
 
-            <ListView
-                android:id="@+id/listview_player_list"
+            <GridView
+                android:id="@+id/gridview_player_list"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="3" >
-            </ListView>
+                android:padding="10dp"
+                android:layout_weight="3"
+                android:numColumns="3"
+                android:horizontalSpacing="5dp"
+                android:verticalSpacing="5dp"
+                >
+            </GridView>
 
             <LinearLayout
                 android:id="@+id/container_action_types"

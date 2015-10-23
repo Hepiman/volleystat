@@ -4,12 +4,14 @@ import java.util.ArrayList;
 
 import si.krkavolley.volleystat.Entity.Player;
 import si.krkavolley.volleystat.Entity.Stat;
+import si.krkavolley.volleystat.util.CustomGrid;
 import android.app.Activity;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,6 +24,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioGroup;
@@ -52,6 +55,8 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 	RadioGroup setNumberGroup;
 	int scoreMyTeam = 0, scoreOpponent = 0;
 	TextView scoreDisplay;
+
+	GridView gv_players;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -93,41 +98,39 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 
 		players = new ArrayList<Player>();
 		players = (ArrayList<Player>) db.getAllPlayers();
-		lv_players = (ListView) findViewById(R.id.listview_player_list);
-		lv_players.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 
 		arrayAdapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_list_item_single_choice, players);
 
-		lv_players.setAdapter(arrayAdapter);
+		gv_players = (GridView) findViewById(R.id.gridview_player_list);
 
-		lv_players.setOnItemClickListener(new OnItemClickListener() {
+		CustomGrid cAdapter = new CustomGrid(StatisticsActivity.this, players);
+		gv_players.setAdapter(cAdapter);
+		gv_players.setChoiceMode(GridView.CHOICE_MODE_SINGLE);
+		gv_players
+				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1,
-					int position, long arg3) {
+					@Override
+					public void onItemClick(AdapterView<?> parent, View view,
+							int position, long id) {
+						// Toast.makeText(StatisticsActivity.this,
+						// "You Clicked at " +players.get(position).toString()+
+						// " ("+id+")", Toast.LENGTH_SHORT).show();
+						playerId = (int) id;
+					}
+				});
 
-				if (position >= 0) {
-					Player p = (Player) lv_players.getAdapter().getItem(
-							position);
-					playerId = p.getId();
-					// Log.d("debug", "playerId =" + playerId + " gameId = " +
-					// gameId + " setNumber = " + setNumber + "position: " +
-					// position + "  long: " + arg3);
-				}
-
-			}
-		});
-		lv_players.setLongClickable(true);
-		lv_players
+		gv_players.setChoiceMode(GridView.CHOICE_MODE_SINGLE);
+		gv_players.setLongClickable(true);
+		gv_players
 				.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 					public boolean onItemLongClick(AdapterView<?> parent,
 							View view, int position, long id) {
 						if (position >= 0) {
-							Player p = (Player) lv_players.getAdapter()
+							Player p = (Player) gv_players.getAdapter()
 									.getItem(position);
-							displayPlayerStats(p.getId(),p.getName());
-							
+							displayPlayerStats(p.getId(), p.getName());
+
 						}
 						return true;
 					}
@@ -186,49 +189,54 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 		});
 		btn_opp_err = (Button) findViewById(R.id.stats_btn_opp_err);
 		btn_opp_err.setOnClickListener(new View.OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				scoreMyTeam++;
 				updateScoreDisplay();
 				db.writeOppErr(gameId, setNumber);
-				Toast.makeText(getApplicationContext(), "Opponent err counter increased", Toast.LENGTH_SHORT).show();
-				
+				Toast.makeText(getApplicationContext(),
+						"Opponent err counter increased", Toast.LENGTH_SHORT)
+						.show();
+
 			}
 		});
-		
+
 		btn_block = (Button) findViewById(R.id.stats_btn_block);
 		btn_block.setOnClickListener(new View.OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				scoreMyTeam++;
 				updateScoreDisplay();
 				db.writeBlock(gameId, playerId, setNumber);
-				Toast.makeText(getApplicationContext(), "Block increased", Toast.LENGTH_SHORT).show();
-				
+				Toast.makeText(getApplicationContext(), "Block increased",
+						Toast.LENGTH_SHORT).show();
+
 			}
 		});
 		btn_opp_att_point = (Button) findViewById(R.id.stats_btn_opp_att_point);
 		btn_opp_att_point.setOnClickListener(new View.OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				scoreOpponent++;
 				updateScoreDisplay();
-				Toast.makeText(getApplicationContext(), "Opponent attack point", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getApplicationContext(),
+						"Opponent attack point", Toast.LENGTH_SHORT).show();
 			}
 		});
 		btn_err = (Button) findViewById(R.id.stats_btn_error);
 		btn_err.setOnClickListener(new View.OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				db.writeOtherError(gameId, playerId, setNumber);
-				Toast.makeText(getApplicationContext(), "Player error", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getApplicationContext(), "Player error",
+						Toast.LENGTH_SHORT).show();
 				scoreOpponent++;
 				updateScoreDisplay();
-				
+
 			}
 		});
 	}
@@ -280,8 +288,6 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 		btn_swa.setOnClickListener(this);
 
 	}
-
-	
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -447,7 +453,7 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 		Intent i;
 		i = new Intent(getApplicationContext(), WebViewSingleStatActivity.class);
 		Bundle b = new Bundle();
-		b.putInt("gameId", gameId); 
+		b.putInt("gameId", gameId);
 		b.putLong("playerId", playerId);
 		b.putString("playerName", name);
 
@@ -455,8 +461,8 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 		startActivity(i);
 
 	}
-	
-	public void updateScoreDisplay(){
-		scoreDisplay.setText(""+scoreMyTeam+" : "+ scoreOpponent);
+
+	public void updateScoreDisplay() {
+		scoreDisplay.setText("" + scoreMyTeam + " : " + scoreOpponent);
 	}
 }

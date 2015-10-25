@@ -1,6 +1,7 @@
 package si.krkavolley.volleystat;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import si.krkavolley.volleystat.Entity.Player;
 import si.krkavolley.volleystat.Entity.Stat;
@@ -57,6 +58,8 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 	TextView scoreDisplay;
 
 	GridView gv_players;
+	
+	boolean ourServe = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -102,6 +105,8 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 		arrayAdapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_list_item_single_choice, players);
 
+		Collections.rotate(players, 1);
+		
 		gv_players = (GridView) findViewById(R.id.gridview_player_list);
 
 		CustomGrid cAdapter = new CustomGrid(StatisticsActivity.this, players);
@@ -220,6 +225,7 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 
 			@Override
 			public void onClick(View v) {
+				ourServe = false;
 				scoreOpponent++;
 				updateScoreDisplay();
 				Toast.makeText(getApplicationContext(),
@@ -231,6 +237,7 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 
 			@Override
 			public void onClick(View v) {
+				ourServe = false;
 				db.writeOtherError(gameId, playerId, setNumber);
 				Toast.makeText(getApplicationContext(), "Player error",
 						Toast.LENGTH_SHORT).show();
@@ -409,6 +416,9 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 			break;
 		case R.id.stats_btn_attack_3:
 			db.writeAttack(gameId, playerId, setNumber, 3);
+			servePingPong();
+			arrayAdapter.notifyDataSetChanged();
+			//gv_players.setAdapter(arrayAdapter);
 			scoreMyTeam++;
 			updateScoreDisplay();
 			Toast.makeText(getApplicationContext(), "attack 3",
@@ -464,5 +474,20 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 
 	public void updateScoreDisplay() {
 		scoreDisplay.setText("" + scoreMyTeam + " : " + scoreOpponent);
+	}
+	
+	public void servePingPong(){
+		if(ourServe){
+			
+		}else{
+			ourServe=true;
+			Collections.swap(players, 4, 5);
+			Collections.swap(players, 3, 5);
+			Collections.swap(players, 0, 5);
+			Collections.swap(players, 1, 5);
+			Collections.swap(players, 2, 5);
+			arrayAdapter.notifyDataSetChanged();
+			gv_players.setAdapter(arrayAdapter);
+		}
 	}
 }

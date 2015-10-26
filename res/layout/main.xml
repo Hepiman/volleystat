@@ -19,7 +19,7 @@
             android:id="@+id/menu_button_players"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Manage Players" />
+            android:text="Player Database" />
         <Button
             android:id="@+id/menu_button_games"
             android:layout_width="wrap_content"

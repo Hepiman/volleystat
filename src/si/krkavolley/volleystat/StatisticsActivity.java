@@ -100,7 +100,7 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 		db = new DatabaseHelper(getApplicationContext());
 
 		players = new ArrayList<Player>();
-		players = (ArrayList<Player>) db.getAllPlayers();
+		players = (ArrayList<Player>) db.getAllAssignedPlayers(gameId);
 
 		arrayAdapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_list_item_single_choice, players);

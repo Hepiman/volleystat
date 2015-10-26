@@ -24,7 +24,7 @@ import android.os.Build;
 
 public class ViewGamesActivity extends Activity {
 
-	Button addNew, startStats, btnRemove, btnEdit;
+	Button addNew, startStats, btnRemove, btnEdit, btnAssignPlayers;
 	Context ctx;
 	ListView lv;
 	DatabaseHelper db;
@@ -104,12 +104,41 @@ public class ViewGamesActivity extends Activity {
 				
 				if (lv.getCheckedItemPosition() >= 0){
 					Game g = (Game) lv.getAdapter().getItem(lv.getCheckedItemPosition());
+					int teamSize = db.getAllAssignedPlayers(g.getId()).size();
+					if(teamSize >= 6){
+						Bundle b = new Bundle();
+						b.putInt("gameId", g.getId()); //Your id
+						b.putString("gameName", g.getName());
+						//Put your id to your next Intent
+			        	i = new Intent(ctx, StatisticsActivity.class);
+			        	i.putExtras(b); 
+			        	startActivity(i);
+					}else{
+						Toast.makeText(getApplicationContext(), "Not enough players ("+ teamSize+"). Assign players to the game first", Toast.LENGTH_SHORT).show();
+					}
+					
+				}else{
+					Toast.makeText(getApplicationContext(), "Please select a game",  Toast.LENGTH_SHORT).show();
+				}
+				
+			}
+		});
+		
+		btnAssignPlayers = (Button) findViewById(R.id.button_game_assign_players);
+		btnAssignPlayers.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent i;
+				lv = (ListView) findViewById(R.id.listview_viewGames);
+				
+				if (lv.getCheckedItemPosition() >= 0){
+					Game g = (Game) lv.getAdapter().getItem(lv.getCheckedItemPosition());
 					Bundle b = new Bundle();
 					b.putInt("gameId", g.getId()); //Your id
 					b.putString("gameName", g.getName());
-					b.putString("gameScore", g.getScore());
 					//Put your id to your next Intent
-		        	i = new Intent(ctx, StatisticsActivity.class);
+		        	i = new Intent(ctx, AssignPlayersActivity.class);
 		        	i.putExtras(b); 
 		        	startActivity(i);
 				}else{

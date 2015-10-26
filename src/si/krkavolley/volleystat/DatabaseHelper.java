@@ -32,7 +32,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	private static final String TABLE_GAME = "game";
 	private static final String TABLE_STATS = "stats";
 	private static final String TABLE_OPP_ERR = "opponent_errors";
-
+	private static final String TABLE_ASSIGNED_PLAYERS = "assigned_players";
+	
 	// Common column names
 	private static final String KEY_ID = "id";
 
@@ -119,6 +120,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ KEY_GAME_ID + " INTEGER, " + KEY_OPP_ERR_1 + " INTEGER, "
 			+ KEY_OPP_ERR_2 + " INTEGER, " + KEY_OPP_ERR_3 + " INTEGER, "
 			+ KEY_OPP_ERR_4 + " INTEGER, " + KEY_OPP_ERR_5 + " INTEGER" + ");";
+	
+	private static final String CREATE_TABLE_ASSIGNED_PLAYERS = "CREATE TABLE "
+			+ TABLE_ASSIGNED_PLAYERS + " (" + KEY_ID + " INTEGER PRIMARY KEY, "
+			+ KEY_GAME_ID + " INTEGER, " + KEY_PLAYER_ID + " INTEGER" + ");";
 
 	public DatabaseHelper(Context context) {
 		super(context, DB_NAME, null, DB_VERSION);
@@ -131,6 +136,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		db.execSQL(CREATE_TABLE_GAME);
 		db.execSQL(CREATE_TABLE_STATS);
 		db.execSQL(CREATE_TABLE_OPP_ERR);
+		db.execSQL(CREATE_TABLE_ASSIGNED_PLAYERS);
 		Log.d(LOG, "Creating database");
 	}
 
@@ -140,6 +146,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_GAME);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_STATS);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_OPP_ERR);
+		db.execSQL("DROP TABLE IF EXISTS " + TABLE_ASSIGNED_PLAYERS);
 		Log.d(LOG, "Database upgrade from version " + oldVersion + " to "
 				+ newVersion);
 
@@ -217,6 +224,76 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		db.close();
 		return players;
 	}
+	
+	// Assign players to certain game
+	public void assignPlayersToGame(List<Player> players, int gameId){
+		SQLiteDatabase db = this.getWritableDatabase();
+		db.delete(TABLE_ASSIGNED_PLAYERS, KEY_GAME_ID + "=?", new String[] { "" + gameId });
+		Log.d("DB", "Deleted asigned players with game "+ gameId);
+		
+		ContentValues values = new ContentValues();
+		for(int i = 0; i<players.size(); i++){
+			values.put(KEY_GAME_ID, gameId);
+			values.put(KEY_PLAYER_ID, players.get(i).getId());
+			db.insert(TABLE_ASSIGNED_PLAYERS, null, values);
+			Log.d("DB", "Player with id " + players.get(i).getId() + " assigned to game " + gameId);
+		}
+		db.close();
+		return;
+	}
+	
+	// Remove player assign
+	public void removePlayerAssignation(int keyId){
+		SQLiteDatabase db = this.getReadableDatabase();
+
+		db.delete(TABLE_ASSIGNED_PLAYERS, KEY_ID + "=?", new String[] { "" + keyId });
+		db.close();
+		Log.d(LOG, "Deleted player assignation with id: " + keyId);
+		return;
+	}
+	
+	
+	// Retrieve all game assigned players
+	public List<Player> getAllAssignedPlayers(int gameId){
+		List<Player> players = new ArrayList<Player>();
+
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor c = db.query(TABLE_ASSIGNED_PLAYERS, new String[] { KEY_ID,
+				KEY_GAME_ID, KEY_PLAYER_ID }, KEY_GAME_ID + "=? ", new String[] {
+				 "" + gameId, }, null, null, null);
+
+		// loop through and add to list
+		if (c.moveToFirst()) {
+			do {
+				Player p = getPlayer(c.getInt(c.getColumnIndex(KEY_PLAYER_ID)));
+				// add to list
+				players.add(p);
+			} while (c.moveToNext());
+		}
+		db.close();
+		return players;
+	}
+	
+	// Retrieve already assigned players
+		public ArrayList<Integer> getAlreadyAssignedPlayers(int gameId){
+			ArrayList map = new ArrayList<Integer>();
+
+			SQLiteDatabase db = this.getReadableDatabase();
+			Cursor c = db.query(TABLE_ASSIGNED_PLAYERS, new String[] { KEY_ID,
+					KEY_GAME_ID, KEY_PLAYER_ID }, KEY_GAME_ID + "=? ", new String[] {
+					 "" + gameId, }, null, null, null);
+
+			// loop through and add to list
+			if (c.moveToFirst()) {
+				do {
+					//Player p = getPlayer(c.getInt(c.getColumnIndex(KEY_PLAYER_ID)));
+					map.add(c.getInt(c.getColumnIndex(KEY_PLAYER_ID)));
+				} while (c.moveToNext());
+			}
+			db.close();
+			return map;
+		}
+
 
 	public HashMap<Integer, Player> getAllPlayersHashMap() {
 		HashMap<Integer, Player> map = new HashMap<Integer, Player>();

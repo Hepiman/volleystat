@@ -15,5 +15,6 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_activity_web_view_full_game_stat">WebViewFullGameStatActivity</string>
     <string name="title_activity_edit_game">EditGameActivity</string>
+    <string name="title_activity_assign_players">AssignPlayersActivity</string>
 
 </resources>

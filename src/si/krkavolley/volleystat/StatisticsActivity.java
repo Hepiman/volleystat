@@ -9,6 +9,7 @@ import si.krkavolley.volleystat.util.CustomGrid;
 import android.app.Activity;
 import android.app.ActionBar;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -24,9 +25,11 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
@@ -39,9 +42,9 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 	LinearLayout serveButtonsContainer, receptionButtonsContainer,
 			attackButtonsContainer, otherButtonsContainer;
 	DatabaseHelper db;
-	ArrayList players;
+	ArrayList players_active, players_bench;
 	ListView lv_players, lv_actionTypes;
-	ArrayAdapter<String> arrayAdapter, actionTypesAdapter;
+	ArrayAdapter<String> arrayAdapterActive, arrayAdapterBench, actionTypesAdapter;
 	int gameId, playerId, setNumber = 1;
 	String gameName, gameScore;
 	TextView bottomText;
@@ -51,14 +54,14 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 	Button btn_a0, btn_a1, btn_a2, btn_a3, btn_ae, btn_aee, btn_ab, btn_abb;
 	// serve buttons
 	Button btn_s0, btn_s1, btn_s2, btn_s3, btn_swa, btn_sover, btn_se;
-	Button btn_err, btn_block, btn_opp_err, btn_opp_att_point;
+	Button btn_err, btn_block, btn_opp_err, btn_opp_att_point, btn_substitution;
 
 	RadioGroup setNumberGroup;
 	int scoreMyTeam = 0, scoreOpponent = 0;
 	TextView scoreDisplay;
 
 	GridView gv_players;
-	
+	CustomGrid cAdapter;
 	boolean ourServe = false;
 
 	@Override
@@ -99,17 +102,24 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 
 		db = new DatabaseHelper(getApplicationContext());
 
-		players = new ArrayList<Player>();
-		players = (ArrayList<Player>) db.getAllAssignedPlayers(gameId);
-
-		arrayAdapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_list_item_single_choice, players);
-
-		Collections.rotate(players, 1);
+		players_active = new ArrayList<Player>();
+		players_active = (ArrayList<Player>) db.getAllAssignedPlayers(gameId);
 		
+		players_bench = new ArrayList<Player>();
+		if(players_active.size()> 6){
+			for(int i = 6; i < players_active.size(); i=i)
+			players_bench.add(players_active.remove(i));
+		}
+		arrayAdapterBench = new ArrayAdapter<String>(this,
+				android.R.layout.simple_list_item_single_choice, players_bench);
+
+		arrayAdapterActive = new ArrayAdapter<String>(this,
+				android.R.layout.simple_list_item_single_choice, players_active);
+
+			
 		gv_players = (GridView) findViewById(R.id.gridview_player_list);
 
-		CustomGrid cAdapter = new CustomGrid(StatisticsActivity.this, players);
+		cAdapter = new CustomGrid(StatisticsActivity.this, players_active);
 		gv_players.setAdapter(cAdapter);
 		gv_players.setChoiceMode(GridView.CHOICE_MODE_SINGLE);
 		gv_players
@@ -246,6 +256,57 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 
 			}
 		});
+		btn_substitution = (Button) findViewById(R.id.stats_btn_player_substitution);
+		btn_substitution.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				
+				 final Dialog dialog = new Dialog(StatisticsActivity.this);
+	                // Include dialog.xml file
+	                dialog.setContentView(R.layout.player_substitution_dialog);
+	                // Set dialog title
+	                dialog.setTitle("Substitutions");
+	 
+	                // set values for custom dialog components - text, image and button
+	                final ListView actives = (ListView) dialog.findViewById(R.id.players_active_list);
+	                actives.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+	                final ListView bench = (ListView) dialog.findViewById(R.id.players_bench_list);
+	                bench.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+	                
+	                bench.setAdapter(arrayAdapterBench);
+	                actives.setAdapter(arrayAdapterActive);
+	 
+	                dialog.show();
+	                 
+	                Button okButton = (Button) dialog.findViewById(R.id.players_substitution_dialog_ok);
+	                
+	                // if decline button is clicked, close the custom dialog
+	                okButton.setOnClickListener(new OnClickListener() {
+	                    @Override
+	                    public void onClick(View v) {
+	                        Player p1 = new Player();
+	                        Player p2 = new Player();
+	                        p2 = (Player) players_bench.get(bench.getCheckedItemPosition());
+	                        p1 = (Player) players_active.get(actives.getCheckedItemPosition());;
+	                        Log.d("sub", p1.getName());
+	                        Log.d("sub", p2.getName());
+	                        //Toast.makeText(getApplicationContext(), "Na igrišèe: " + p2.getName() + "Na klop: " + p1.getName(), Toast.LENGTH_SHORT).show();
+	                        players_active.set(actives.getCheckedItemPosition(), p2);
+	                        players_bench.set(bench.getCheckedItemPosition(), p1);
+	                        arrayAdapterActive.notifyDataSetChanged();
+	                        arrayAdapterBench.notifyDataSetChanged();
+	                        cAdapter.notifyDataSetChanged();
+	                        //Toast.makeText(getApplicationContext(), "Actives: " + players_active.size() + " Bench: " + players_bench.size(), Toast.LENGTH_SHORT).show();
+	                        dialog.dismiss();
+	                        refreshGrid();
+	                    }
+	                });
+	                
+	                
+			}
+		});
+		
 	}
 
 	private void initializeButtons() {
@@ -417,7 +478,7 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 		case R.id.stats_btn_attack_3:
 			db.writeAttack(gameId, playerId, setNumber, 3);
 			servePingPong();
-			arrayAdapter.notifyDataSetChanged();
+			arrayAdapterActive.notifyDataSetChanged();
 			//gv_players.setAdapter(arrayAdapter);
 			scoreMyTeam++;
 			updateScoreDisplay();
@@ -471,6 +532,18 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 		startActivity(i);
 
 	}
+	
+	public void refreshGrid(){
+//		gv_players.invalidate();
+//		arrayAdapterActive = new ArrayAdapter<String>(this,
+//		android.R.layout.simple_list_item_single_choice, players_active);
+//		gv_players.setAdapter(arrayAdapterActive);
+		arrayAdapterActive.notifyDataSetInvalidated();
+		arrayAdapterActive.notifyDataSetChanged();
+		CustomGrid ad = (CustomGrid)gv_players.getAdapter();
+		ad.notifyDataSetChanged();
+		gv_players.setAdapter(ad);
+	}
 
 	public void updateScoreDisplay() {
 		scoreDisplay.setText("" + scoreMyTeam + " : " + scoreOpponent);
@@ -481,13 +554,16 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 			
 		}else{
 			ourServe=true;
-			Collections.swap(players, 4, 5);
-			Collections.swap(players, 3, 5);
-			Collections.swap(players, 0, 5);
-			Collections.swap(players, 1, 5);
-			Collections.swap(players, 2, 5);
-			arrayAdapter.notifyDataSetChanged();
-			gv_players.setAdapter(arrayAdapter);
+			Collections.swap(players_active, 4, 5);
+			Collections.swap(players_active, 3, 5);
+			Collections.swap(players_active, 0, 5);
+			Collections.swap(players_active, 1, 5);
+			Collections.swap(players_active, 2, 5);
+			CustomGrid ad = (CustomGrid)gv_players.getAdapter();
+			ad.notifyDataSetChanged();
+			gv_players.setAdapter(ad);
+//			gv_players.setAdapter(new ArrayAdapter<String>(this,
+//					android.R.layout.simple_list_item_single_choice, players_active));
 		}
 	}
 }

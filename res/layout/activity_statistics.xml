@@ -69,6 +69,7 @@
             android:layout_weight="10"
             android:orientation="horizontal" >
 
+            
             <GridView
                 android:id="@+id/gridview_player_list"
                 android:layout_width="100dp"
@@ -109,6 +110,13 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:text="Opp. att. Point" />
+                <Button
+                    android:id="@+id/stats_btn_player_substitution"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Substitution"
+                    />
             </LinearLayout>
 
             <LinearLayout

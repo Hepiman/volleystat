@@ -22,7 +22,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	private static final String LOG = "DatabaseHelper";
 
 	// DB version
-	private static final int DB_VERSION = 8;
+	private static final int DB_VERSION = 9;
 
 	// DB name
 	private static final String DB_NAME = "volleystat_db";

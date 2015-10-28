@@ -9,6 +9,7 @@ public class Game implements Parcelable{
 	String date;
 	String description;
 	String score;
+	String score_sets="0:0 0:0 0:0 0:0 0:0";
 	
 	public Game(){
 		
@@ -21,19 +22,21 @@ public class Game implements Parcelable{
 		
 	}
 	
-	public Game(String name, String description, String date, String score){
+	public Game(String name, String description, String date, String score, String score_sets){
 		this.name = name;
 		this.description = description;
 		this.date = date;
 		this.score = score;
+		this.score_sets = score_sets;
 	}
 	
-	public Game(int id, String name, String description, String date, String score){
+	public Game(int id, String name, String description, String date, String score, String score_sets){
 		this.id = id;
 		this.name = name;
 		this.description = description;
 		this.date = date;
 		this.score = score;
+		this.score_sets = score_sets;
 	}
 	
 	public Game(Parcel in) {
@@ -41,6 +44,7 @@ public class Game implements Parcelable{
 		this.description = in.readString();
 		this.date = in.readString();
 		this.score = in.readString();
+		this.score_sets = in.readString();
 	}
 
 	// setters
@@ -63,6 +67,10 @@ public class Game implements Parcelable{
 	public void setDate(String date) {
 		this.date = date;
 	}
+	public void setScoreSets(String score_sets){
+		this.score_sets = score_sets;
+	}
+	
 
 	//getters
 	public int getId(){
@@ -83,12 +91,16 @@ public class Game implements Parcelable{
 	public void setScore(String score) {
 		this.score = score;
 	}
+	public String getScoreSets(){
+		return this.score_sets;
+	}
 	
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeString(name);
 		dest.writeString(description);
 		dest.writeString(date);
 		dest.writeString(score);
+		dest.writeString(score_sets);
 	}
 	
 	public static final Parcelable.Creator<Game> CREATOR = new Parcelable.Creator<Game>(){

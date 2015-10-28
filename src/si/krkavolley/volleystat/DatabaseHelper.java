@@ -22,7 +22,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	private static final String LOG = "DatabaseHelper";
 
 	// DB version
-	private static final int DB_VERSION = 9;
+	private static final int DB_VERSION = 10;
 
 	// DB name
 	private static final String DB_NAME = "volleystat_db";
@@ -46,6 +46,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	private static final String KEY_GAME_NAME = "game_name";
 	private static final String KEY_GAME_DATE = "game_date";
 	private static final String KEY_GAME_SCORE = "game_score";
+	private static final String KEY_GAME_SCORE_SETS = "game_score_sets";
 
 	// STATS table column names
 	private static final String KEY_PLAYER_ID = "player_id";
@@ -97,7 +98,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	private static final String CREATE_TABLE_GAME = "CREATE TABLE "
 			+ TABLE_GAME + " (" + KEY_ID + " INTEGER PRIMARY KEY,"
 			+ KEY_GAME_NAME + " TEXT, " + KEY_GAME_DESC + " TEXT,"
-			+ KEY_GAME_DATE + " TEXT, " + KEY_GAME_SCORE + " TEXT" + ");";
+			+ KEY_GAME_DATE + " TEXT, " + KEY_GAME_SCORE + " TEXT,"
+			+ KEY_GAME_SCORE_SETS + " TEXT"+ ");";
 
 	private static final String CREATE_TABLE_STATS = "CREATE TABLE "
 			+ TABLE_STATS + " (" + KEY_ID + " INTEGER PRIMARY KEY,"
@@ -330,12 +332,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		values.put(KEY_GAME_DESC, game.getDescription());
 		values.put(KEY_GAME_DATE, game.getDate());
 		values.put(KEY_GAME_SCORE, game.getScore());
+		values.put(KEY_GAME_SCORE_SETS, game.getScoreSets());
 
 		long gameId = db.insert(TABLE_GAME, null, values);
 		Log.d(LOG, "nova tekma: " + game.getName());
 		db.close();
 		return gameId;
 	}
+	
+	// Retrive a game score by sets (25:11 25:10 25:13 0:0 0:0)
+	public String getGameScoreSets(long gameId){
+		Game g = getGame(gameId);
+		return g.getScoreSets();
+	}
+	
+	public void updateGameScoreSets(long gameId, int setNumber, String score){
+		Game g = getGame(gameId);
+		String score_sets = g.getScoreSets();
+		String[] score_set = score_sets.split(" "); 
+		score_set[(setNumber-1)] = score;
+		score_sets = ""+score_set[0] +" "+score_set[1] +" "+score_set[2] +" "+score_set[3] +" "+score_set[4];
+		g.setScoreSets(score_sets);
+		updateGame(g);
+		return;
+	}
+	
 
 	// Retrieve a game
 	public Game getGame(long gameId) {
@@ -357,6 +378,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		g.setDescription(c.getString(c.getColumnIndex(KEY_GAME_DESC)));
 		g.setDate(c.getString(c.getColumnIndex(KEY_GAME_DATE)));
 		g.setScore(c.getString(c.getColumnIndex(KEY_GAME_SCORE)));
+		g.setScoreSets(c.getString(c.getColumnIndex(KEY_GAME_SCORE_SETS)));
 		db.close();
 		return g;
 	}
@@ -379,6 +401,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				g.setDescription(c.getString(c.getColumnIndex(KEY_GAME_DESC)));
 				g.setDate(c.getString(c.getColumnIndex(KEY_GAME_DATE)));
 				g.setScore(c.getString(c.getColumnIndex(KEY_GAME_SCORE)));
+				g.setScoreSets(c.getString(c.getColumnIndex(KEY_GAME_SCORE_SETS)));
 
 				// add to list
 				games.add(g);
@@ -405,6 +428,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		data.put(KEY_GAME_NAME, g.getName());
 		data.put(KEY_GAME_DESC, g.getDescription());
 		data.put(KEY_GAME_DATE, g.getDate());
+		data.put(KEY_GAME_SCORE, g.getScore());
+		data.put(KEY_GAME_SCORE_SETS, g.getScoreSets());
 		db.update(TABLE_GAME, data, KEY_ID + "=" + g.getId(), null);
 		Log.d(LOG, "Updated game with id: " + g.getId());
 		db.close();

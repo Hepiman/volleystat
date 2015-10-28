@@ -59,7 +59,7 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 	RadioGroup setNumberGroup;
 	int scoreMyTeam = 0, scoreOpponent = 0;
 	TextView scoreDisplay;
-
+	String score_sets;
 	GridView gv_players;
 	CustomGrid cAdapter;
 	boolean ourServe = false;
@@ -68,17 +68,22 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_statistics);
-
+		db = new DatabaseHelper(getApplicationContext());
 		initializeButtons();
 
 		Bundle b = getIntent().getExtras();
 		gameId = b.getInt("gameId");
 		gameName = b.getString("gameName");
 		gameScore = b.getString("gameScore");
+		
+		
 
 		bottomText = (TextView) findViewById(R.id.stats_bottom_text);
 		bottomText.setText(gameName + " (" + gameScore + ")");
 		scoreDisplay = (TextView) findViewById(R.id.stats_score_text);
+		
+		score_sets = db.getGameScoreSets(gameId);
+		updateCurrentSetScoreDisplay(setNumber, score_sets);
 
 		serveButtonsContainer = (LinearLayout) findViewById(R.id.container_serve_buttons);
 		attackButtonsContainer = (LinearLayout) findViewById(R.id.container_attack_buttons);
@@ -94,13 +99,15 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 						View rButton = group.findViewById(checkedId);
 						int index = group.indexOfChild(rButton);
 						setNumber = index + 1;
+						score_sets = db.getGameScoreSets(gameId);
+						updateCurrentSetScoreDisplay(setNumber, score_sets);
 						Toast.makeText(getApplicationContext(),
 								"setNumber: " + setNumber, Toast.LENGTH_SHORT)
 								.show();
 					}
 				});
 
-		db = new DatabaseHelper(getApplicationContext());
+		
 
 		players_active = new ArrayList<Player>();
 		players_active = (ArrayList<Player>) db.getAllAssignedPlayers(gameId);
@@ -128,12 +135,16 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 					@Override
 					public void onItemClick(AdapterView<?> parent, View view,
 							int position, long id) {
-						// Toast.makeText(StatisticsActivity.this,
-						// "You Clicked at " +players.get(position).toString()+
-						// " ("+id+")", Toast.LENGTH_SHORT).show();
+						
 						playerId = (int) id;
+						for (int i=0; i < parent.getChildCount(); i++){
+						      View v = parent.getChildAt(i);
+						      v.setBackgroundResource(R.drawable.player_not_selected);
+						}
+						view.setBackgroundResource(R.drawable.player_selected);
 					}
 				});
+		
 
 		gv_players.setChoiceMode(GridView.CHOICE_MODE_SINGLE);
 		gv_players.setLongClickable(true);
@@ -237,7 +248,7 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 			public void onClick(View v) {
 				ourServe = false;
 				scoreOpponent++;
-				updateScoreDisplay();
+				saveCurrentSetScore();
 				Toast.makeText(getApplicationContext(),
 						"Opponent attack point", Toast.LENGTH_SHORT).show();
 			}
@@ -307,6 +318,27 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 			}
 		});
 		
+	}
+
+	private void updateCurrentSetScoreDisplay(int setNumber, String score_sets) {
+		
+		String[] score_set = score_sets.split(" "); 
+//		for(int i = 0; i < fn.length; i++){
+//			Log.d("test", "niz " +(i+1) + ": " + fn[i]);
+//			int us = Integer.parseInt(fn[i].split(":")[0]);
+//			int them = Integer.parseInt(fn[i].split(":")[1]);
+//			Log.d("test", "niz " +(i+1) + ": " + us + " vs " +them);
+//		}
+		scoreDisplay.setText(score_set[(setNumber-1)]);
+		scoreMyTeam = Integer.parseInt(score_sets.split(" ")[(setNumber-1)].split(":")[0]);
+		scoreOpponent = Integer.parseInt(score_sets.split(" ")[(setNumber-1)].split(":")[1]); 
+		
+	}
+	
+	private void saveCurrentSetScore(){
+		String score =""+scoreMyTeam+":"+scoreOpponent;
+		db.updateGameScoreSets(gameId, setNumber, score);
+		updateScoreDisplay();
 	}
 
 	private void initializeButtons() {
@@ -471,7 +503,8 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 		case R.id.stats_btn_attack_2:
 			db.writeAttack(gameId, playerId, setNumber, 2);
 			scoreMyTeam++;
-			updateScoreDisplay();
+			//updateScoreDisplay();
+			saveCurrentSetScore();
 			Toast.makeText(getApplicationContext(), "attack 2",
 					Toast.LENGTH_SHORT).show();
 			break;
@@ -482,6 +515,7 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 			//gv_players.setAdapter(arrayAdapter);
 			scoreMyTeam++;
 			updateScoreDisplay();
+			saveCurrentSetScore();
 			Toast.makeText(getApplicationContext(), "attack 3",
 					Toast.LENGTH_SHORT).show();
 			break;
@@ -534,10 +568,6 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 	}
 	
 	public void refreshGrid(){
-//		gv_players.invalidate();
-//		arrayAdapterActive = new ArrayAdapter<String>(this,
-//		android.R.layout.simple_list_item_single_choice, players_active);
-//		gv_players.setAdapter(arrayAdapterActive);
 		arrayAdapterActive.notifyDataSetInvalidated();
 		arrayAdapterActive.notifyDataSetChanged();
 		CustomGrid ad = (CustomGrid)gv_players.getAdapter();
@@ -562,8 +592,6 @@ public class StatisticsActivity extends Activity implements OnClickListener {
 			CustomGrid ad = (CustomGrid)gv_players.getAdapter();
 			ad.notifyDataSetChanged();
 			gv_players.setAdapter(ad);
-//			gv_players.setAdapter(new ArrayAdapter<String>(this,
-//					android.R.layout.simple_list_item_single_choice, players_active));
 		}
 	}
 }
